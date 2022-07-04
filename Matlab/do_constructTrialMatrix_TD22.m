@@ -1,4 +1,4 @@
-function [chapter, trialmatrix, ex_vectors_cur] = do_constructTrialMatrix_TD22(phase, odorcue_odors, rewardcue_odors)%,JitterButton)
+function [chapter, trialmatrix, ex_vectors_cur] = do_constructTrialMatrix_TD22(phase)%,JitterButton)
         
 
         
@@ -24,7 +24,7 @@ function [chapter, trialmatrix, ex_vectors_cur] = do_constructTrialMatrix_TD22(p
 %       is the rewardcue_odor, the third number is the presence of reward and the forth number is the trial type (8 types in total)       
 
        % get chapter data from GetSessionParameters
-       chapter = GetSessionParameters_TD22(phase,odorcue_odors, rewardcue_odors);
+       chapter = GetSessionParameters_TD22(phase);
 %        chapter.num_of_chapters = size(chapter.rewardcue_odors,1);
        
        

@@ -4,26 +4,28 @@
 % -> added pause after first and second and before second IR LED trigger
 % -> adjusted tagging script for DAT
 
-function superflex_TD22(COMPort, fname,setup)%, JitterButton)
+function superflex_TD22(phase, COMPort, fname,setup)%, JitterButton)
 %% create header-file, open serial connection to olfactometer.
 
 if ismember(fname, {'Y01' 'Y02' 'Y03' 'Y04' 'Y05' 'Y06' 'Y07' 'Y08' 'Y09' 'Y010'})
-    fprintf('morning sessions\n');
+    sprintf('morning sessions\n');
     phase='TD_22_1_morning';
-elseif ismember(fname, {'Y11' 'Y12' 'Y13' 'Y14' 'Y15' 'Y16' 'Y17' 'Y18' 'Y19' 'Y20'})
-    fprintf('afternoon sessions\n');
+elseif ismember(fname, {'Y11' 'Y12' 'Y13' 'Y04' 'Y05' 'Y06' 'Y07' 'Y08' 'Y09' 'Y010'})
+    sprintf('afternoon sessions\n');
     phase='TD_22_1_afternoon';
 else
-    fprintf('unexpected animal number\n');
+   sprintf('unexpected animal number\n');
 end
-
 sessionstart = tic;
+
 protocol_file = CreateHeader(fname);
+
 s = SetupSerial(COMPort);
 
 %% selection of parameters according to 'phase' input argument
 
-    [chapter, session.trialmatrix,ex_vectors_cur]=do_constructTrialMatrix_TD22(phase);  
+    [chapter, session.trialmatrix,ex_vectors_cur]=do_constructTrialMatrix_TD22(phase);
+  
     session.trialmatrix_concatenated =  session.trialmatrix;
     
 %% set up some initial conditions

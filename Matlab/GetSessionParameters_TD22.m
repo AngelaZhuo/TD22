@@ -1,5 +1,5 @@
 
-function chapter = GetSessionParameters_TD22(scheme, fname, odorcue_odors, rewardcue_odors)
+function chapter = GetSessionParameters_TD22(scheme)
 
 switch scheme
     
@@ -321,11 +321,34 @@ switch scheme
         chapter.rewardcue_odor_duration(1,1:length(chapter.rewardcue_odors(1,:)))={5000 5000};  
         
         
-    case 'TD_22_1'
-        
-        if 
+    case 'TD_22_1_morning'
         odorcue_odors=[5 6];
         rewardcue_odors=[7 8];
+
+        odor_prob=[0.8 0.2];        
+        rew_prob=[0.8 0.2]; 
+        chapter.case=scheme;
+        
+        chapter.max_trials=150;
+        chapter.reward_delay=1200;
+        chapter.lick_window=7500;
+        
+        
+        chapter.trials_until_end=chapter.max_trials;
+        
+        
+        chapter.odorcue_odors(1,:)=odorcue_odors;
+        chapter.rewardcue_odors(1,:)=rewardcue_odors;
+        chapter.odorcue_odor_freq(1,:)=[20 20];
+        chapter.rewardcue_odor_freq(1,:)=[20 20];
+        chapter.rew_prob(1,:)=rew_prob;
+        chapter.rew_sizes(1,1:length(chapter.rewardcue_odors(1,:)))={333 333};
+        chapter.odorcue_odor_duration(1,1:length(chapter.odorcue_odors(1,:)))={1200 1200};        
+        chapter.rewardcue_odor_duration(1,1:length(chapter.rewardcue_odors(1,:)))={1200 1200};  
+        
+    case 'TD_22_1_afternoon'
+        odorcue_odors=[6 5];
+        rewardcue_odors=[8 7];
 
         odor_prob=[0.8 0.2];        
         rew_prob=[0.8 0.2]; 
