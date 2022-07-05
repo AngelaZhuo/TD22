@@ -7,7 +7,7 @@
 function superflex_TD22(COMPort, fname,setup)%, JitterButton)
 %% create header-file, open serial connection to olfactometer.
 
-if ismember(fname, {'Y01' 'Y02' 'Y03' 'Y04' 'Y05' 'Y06' 'Y07' 'Y08' 'Y09' 'Y010'})
+if ismember(fname, {'Y01' 'Y02' 'Y03' 'Y04' 'Y05' 'Y06' 'Y07' 'Y08' 'Y09' 'Y10'})
     fprintf('morning sessions\n');
     phase='TD_22_1_morning';
 elseif ismember(fname, {'Y11' 'Y12' 'Y13' 'Y14' 'Y15' 'Y16' 'Y17' 'Y18' 'Y19' 'Y20'})
