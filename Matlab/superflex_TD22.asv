@@ -18,7 +18,7 @@ else
 end
 
 if numel(animals) == 2
-    fname = ['A_',animals{1},'+ B_',animals{2}];    %The animal entered first should be in box A and the one entered second should be in box B
+    fname = ['A_',animals{1},'+ B_',animals{2}];    %The animal entered first 
 elseif numel(animals) == 1
     fname = ['A_',animals{1}];  %If there is only one animal in a session, make sure the animal is in box A
 end

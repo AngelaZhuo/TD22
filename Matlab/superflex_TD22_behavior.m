@@ -4,7 +4,7 @@
 % -> added pause after first and second and before second IR LED trigger
 % -> adjusted tagging script for DAT
 
-function superflex_TD22(COMPort, animals, setup)%, JitterButton)
+function superflex_TD22_behavior(COMPort, animals, setup)%, JitterButton)
 %% create header-file, open serial connection to olfactometer.
 
 if all(ismember(animals, {'Y01' 'Y02' 'Y03' 'Y04' 'Y05' 'Y06' 'Y07' 'Y08' 'Y09' 'Y10'}))
