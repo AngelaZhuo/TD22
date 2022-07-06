@@ -4,27 +4,47 @@
 % -> added pause after first and second and before second IR LED trigger
 % -> adjusted tagging script for DAT
 
-function superflex_TD22_behavior(COMPort, animals, setup)%, JitterButton)
+function superflex_TD22_behavior(phase, animals, COMPort, setup)%, JitterButton)
 %% create header-file, open serial connection to olfactometer.
+
+%In the TD22 behavioral cohort, odd numbers represent WT(control) animals and even numbers represent D1R-KO (in VS) animals. One animal pair with one WT and one mutant mice is recorded in the same session.      
 
 if all(ismember(animals, {'Y01' 'Y02' 'Y03' 'Y04' 'Y05' 'Y06' 'Y07' 'Y08' 'Y09' 'Y10'}))
     fprintf('morning sessions\n');
-    phase='TD_22_1_morning';
+    if ~ismember(phase, {'TD22_M50' 'TD_M100' 'TD22_M150' })
+        fprintf('wrong animal-phase association!\n');
+        return
+    end
 elseif all(ismember(animals, {'Y11' 'Y12' 'Y13' 'Y14' 'Y15' 'Y16' 'Y17' 'Y18' 'Y19' 'Y20'}))
     fprintf('afternoon sessions\n');
-    phase='TD_22_1_afternoon';
+    if ~ismember(phase, {'TD22_A50' 'TD22_A100' 'TD22_A150' })
+        fprintf('wrong animal-phase association!\n');
+        return
+    end
 else
     fprintf('unexpected animal number\n');
 end
 
-if numel(animals) == 2
-    fname = ['A_',animals{1},'+ B_',animals{2}];    %The animal entered first should be in box A and the one entered second should be in box B
-elseif numel(animals) == 1
-    fname = ['A_',animals{1}];  %If there is only one animal in a session, make sure the animal is in box A
+fname=[];
+if size(animals,2)<2
+    fname{1} = ['A_',animals{1}];   %If there is only one animal in a session, make sure the animal is in box A
+else
+    fname{1} = ['A_',animals{1}];    %The animal entered first should be in box A and the one entered second should be in box B
+    fname{2} = ['B_',animals{2}];      
 end
+% if numel(animals) == 2
+%     fname = ['A_',animals{1},'+ B_',animals{2}];    %The animal entered first should be in box A and the one entered second should be in box B
+% elseif numel(animals) == 1
+%     fname = ['A_',animals{1}];  %If there is only one animal in a session, make sure the animal is in box A
+% end
+
 
 sessionstart = tic;
-protocol_file = CreateHeader(fname);
+% protocol_file = CreateHeader(fname);
+protocol_file=[];
+for a = 1:size(animals,2)
+    protocol_file{a} = CreateHeader(fname{a});
+end
 s = SetupSerial(COMPort);
 
 %% selection of parameters according to 'phase' input argument
@@ -192,7 +212,10 @@ paramsToBCS = tic;
         
         
         session(1).data.trials=data;
-        save(protocol_file, 'session');
+%         save(protocol_file, 'session');
+        for a = 1:size(animals,2)
+            save(protocol_file{a}, 'session');
+        end
         disp('saved');
         pause(ITD);
        
@@ -308,14 +331,20 @@ for tr = 1:size(trialmatrix2,2)
         tagging(tr).odor_lat = curr_odor_stim;
     
         session(1).tagging.trials=tagging;
-        save(protocol_file, 'session');
+%        save(protocol_file, 'session');
+        for a = 1:size(animals,2)
+            save(protocol_file{a}, 'session');
+        end
         disp('saved');
         
     pause((trialmatrix2(tr).ITI/1e3) + (2*rand));
 end
     
 %% End of session
-    save(protocol_file, 'session');
+%    save(protocol_file, 'session');
+    for a = 1:size(animals,2)
+            save(protocol_file{a}, 'session');
+        end
     disp('end of session saved');
     sessionduration = toc(sessionstart);
     disp('Session duration');
