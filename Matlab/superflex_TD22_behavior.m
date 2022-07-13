@@ -53,10 +53,18 @@ s = SetupSerial(COMPort);
     session.trialmatrix_concatenated =  session.trialmatrix;
     
 %% set up some initial conditions
-session.name = fname;
+if size(animals,2)>1
+    fname_str=strcat(fname{1},'+ ',fname{2});
+    protocol_file_str = strcat(protocol_file{1},'+ ',protocol_file{2});
+else 
+    fname_str=fname{1};
+    protocol_file_str = protocol_file{1};
+end
+
+session.name = fname_str;
 session.time = now;
 session.chapter = chapter;
-session.header_file = protocol_file;
+session.header_file = protocol_file_str;
 session.setup = setup;
 
 current_chapter = 1;
@@ -344,7 +352,7 @@ end
 %    save(protocol_file, 'session');
     for a = 1:size(animals,2)
             save(protocol_file{a}, 'session');
-        end
+    end
     disp('end of session saved');
     sessionduration = toc(sessionstart);
     disp('Session duration');
