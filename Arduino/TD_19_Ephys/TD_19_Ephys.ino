@@ -295,7 +295,7 @@ void loop()
             state = 1;
           }
           
-        //optogenetic tagging
+        //optogenetic tagging and LED
           if (strcmp(argv[0], "trialParams2") == 0) {
             
             laser_pattern   = (int)atoi(argv[1]); //atoi: string/ascii zu Int;
@@ -325,7 +325,7 @@ void loop()
       //in the following several cases for simple control via serial Monitor are defined
           
        // tt= Trialtest
-       // tt1/2 testing valves
+       // tt1/2 testing valves for vial 5, 6, 7, 8
                    if (strcmp(argv[0], "tt1") == 0) {
        // == 0 means strings are equal
 
@@ -1171,7 +1171,7 @@ case 100:
           delay(20);
           }
         }               
-        if(laser_pattern == 99) {        //led sync stim 
+        if(laser_pattern == 99) {        //led stim for video-intan sync
           
           digitalWrite(LEDtrig, HIGH);
           delay(1000);
