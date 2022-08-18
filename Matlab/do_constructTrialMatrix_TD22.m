@@ -7,7 +7,7 @@ function [chapter, trialmatrix, ex_vectors_cur] = do_constructTrialMatrix_TD22(p
 %         if strfind(JitterButton,'JitterOn') == 1 
 %         %load('C:\Users\Anwender\Desktop\ExperimentalControl\MRTprediction\experiments_jittered.mat'); % experiments.mat
 %         else
-        load('\\zisvfs12\Home\yi.zhuo\Documents\GitHub\TD22\MatlaB\experiments'); % experiments.mat -> max4consec max 4 trialpaths in a row
+        load('D:\TD22_behavior\Matlab\experiments'); % experiments.mat -> max4consec max 4 trialpaths in a row
 %         % end
 %         %matching with MRI 21thJan 2020
 %         ChosenVec = 189;
@@ -76,7 +76,7 @@ function [chapter, trialmatrix, ex_vectors_cur] = do_constructTrialMatrix_TD22(p
        
        %% create trialmatrix 
       
-       [chapter, trialmatrix] = ConstructChapter_TD19(chapter, ex_vectors_cur);
+       [trialmatrix] = ConstructTrialMatrix_TD22(chapter,ex_vectors_cur);
    
 
        chapter.NumberExpVectors=ChosenVec;

@@ -30,10 +30,10 @@
 #define DIGITAL3 64
 #define DIGITAL4  65
 #define DIGITAL5  66
-#define DIGITAL6  67
+#define DIGITAL6  67 //Digital6 does not seem to work
 #define DIGITAL7  68
 
-#define LaserTrig  62
+#define Pump2Trig  62 //DIGITAL1 was LaserTrig in Mirko's script
 #define FVTrig  63
 #define LaserTrig2  64
 #define PumpTrig  65
@@ -46,7 +46,7 @@
 
 
 int lickSol = SOLENOID1;
-int Preloading = 800; //720 in fMRI
+int Preloading = 900; //720 in fMRI
 int state = 0;
 int Sensor, Sensor1, Sensor2;
 
@@ -56,9 +56,9 @@ int Sensor, Sensor1, Sensor2;
 //int DropSize, DropNumber;
 
 // some standard parameters that are not included anymore in superflex2000.mat
-uint16_t odor_lat_On= 70; // 480 measured for MRI setup with 3 m odortube
-uint16_t odor_lat_Off= 70;//440 MRI
-uint16_t drop_lat = 240; // 
+uint16_t odor_lat_On= 90; // Mirko's setup was 70; 480 measured for MRI setup with 3 m odortube
+uint16_t odor_lat_Off= 90;//Mirko's setup was 70; MRI 440
+uint16_t drop_lat = 520; // Mirko's setup was 240
 uint16_t  TrialPrep = 1200;
 uint16_t  IOI = 1200;
 uint16_t  state_dur = 1200;
@@ -323,16 +323,17 @@ void loop()
             state = 300;
           }          
       //in the following several cases for simple control via serial Monitor are defined
-          
+
+      
        // tt= Trialtest
-       // tt1/2 testing valves for vial 5, 6, 7, 8
+       // tt1/2 testing valves for vial 5, 10, 7, 8
                    if (strcmp(argv[0], "tt1") == 0) {
        // == 0 means strings are equal
 
             odorcue_odor_dur = 1240;
             rewardcue_odor_dur =1240;
             odorcue_odor_num   = 5; //atoi: string/ascii zu Int;
-            rewardcue_odor_num   = 6;
+            rewardcue_odor_num   = 10;
             IOI = 1200;
             drop_or_not = 0;
             reward_active = drop_or_not;
@@ -415,7 +416,14 @@ void loop()
             Serial.println (startTime);
            state = 100;}
            
-    // test Laser 1: 10x1s pulses + 2min on  
+    // test LED  
+           if (strcmp(argv[0], "led") == 0) {
+           digitalWrite(LEDtrig,HIGH);
+           delay(1000);
+           digitalWrite(LEDtrig,LOW);
+           state = 0;}    
+           
+     // test Laser 1: 10x1s pulses + 2min on  
            if (strcmp(argv[0], "tt6") == 0) {
    
            laser_pattern = 101;
@@ -506,7 +514,7 @@ void loop()
             Serial.println (startTime);
             state = 300; }
     
-          
+
              
           else if (strcmp(argv[0], "valve") == 0) {
             ValveOnOff(c);
@@ -539,7 +547,13 @@ void loop()
             ReadDigitalChannel(c);
           }
 
-
+             
+          if (strcmp(argv[0],"fakedrop") == 0) {
+            digitalWrite(DIGITAL1, HIGH);
+            delay(reward_size2);
+            digitalWrite(DIGITAL1, LOW);
+          }
+          
           else  if (strcmp(argv[0], "drop") == 0)  {
             digitalWrite(lickSol, HIGH);              // initial drop for more motivation
             //SetValve((uint8_t)1, (uint8_t)4, (uint8_t)ON);            
@@ -747,8 +761,10 @@ void loop()
         DropOnTimefake = millis();
         Serial.println ("Dropfake");
         Serial.println (DropOnTimefake);
+        digitalWrite(DIGITAL1, HIGH);
+        delay(reward_size2);
+        digitalWrite(DIGITAL1, LOW);
      state = 12; 
-
      }
 
         if (drop_or_not == 1 && (currentTime - perc_rewardcue_OdorOffTime > reward_delay - drop_lat)) {       
@@ -1176,6 +1192,15 @@ case 100:
           digitalWrite(LEDtrig, HIGH);
           delay(1000);
           digitalWrite(LEDtrig, LOW);}
+
+        if(laser_pattern == 991) {        //turn on red light
+          
+          digitalWrite(LEDtrig, HIGH);}
+
+        if(laser_pattern == 990) {        //turn off red light
+                    
+          digitalWrite(LEDtrig, LOW);}
+ 
      
        if(laser_pattern == 100) {        //all lasers on for 2min
           
@@ -1271,6 +1296,7 @@ case 300:
           
           Serial.println ("Preloading");
           Serial.println (currentTime);
+          //delay(1000);
           state = 301;
           }
       break;

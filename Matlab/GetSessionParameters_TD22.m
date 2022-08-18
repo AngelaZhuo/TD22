@@ -242,7 +242,7 @@ switch scheme
         
         
     case 'TD22_M50'
-        odorcue_odors=[5 6];
+        odorcue_odors=[5 10];
         rewardcue_odors=[7 8];
 
         odor_prob=[0.8 0.2];        
@@ -268,7 +268,7 @@ switch scheme
         
         
     case 'TD22_M100'
-        odorcue_odors=[5 6];
+        odorcue_odors=[5 10];
         rewardcue_odors=[7 8];
 
         odor_prob=[0.8 0.2];        
@@ -294,7 +294,7 @@ switch scheme
         
         
     case 'TD22_M150'
-        odorcue_odors=[5 6];
+        odorcue_odors=[5 10];
         rewardcue_odors=[7 8];
 
         odor_prob=[0.8 0.2];        
@@ -320,7 +320,7 @@ switch scheme
     
         
     case 'TD22_A50'
-        odorcue_odors=[6 5];
+        odorcue_odors=[10 5];
         rewardcue_odors=[8 7];
 
         odor_prob=[0.8 0.2];        
@@ -346,7 +346,7 @@ switch scheme
         
         
     case 'TD22_A100'
-        odorcue_odors=[6 5];
+        odorcue_odors=[10 5];
         rewardcue_odors=[8 7];
 
         odor_prob=[0.8 0.2];        
@@ -372,7 +372,7 @@ switch scheme
         
         
     case 'TD22_A150'
-        odorcue_odors=[6 5];
+        odorcue_odors=[10 5];
         rewardcue_odors=[8 7];
 
         odor_prob=[0.8 0.2];        

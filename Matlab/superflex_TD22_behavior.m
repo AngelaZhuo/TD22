@@ -9,13 +9,13 @@ function superflex_TD22_behavior(phase, animals, COMPort, setup)%, JitterButton)
 
 %In the TD22 behavioral cohort, odd numbers represent WT(control) animals and even numbers represent D1R-KO (in VS) animals. One animal pair with one WT and one mutant mice is recorded in the same session.      
 
-if all(ismember(animals, {'Y01' 'Y02' 'Y03' 'Y04' 'Y05' 'Y06' 'Y07' 'Y08' 'Y09' 'Y10'}))
+if all(ismember(animals, {'Y01' 'Y02' 'Y03' 'Y04' 'Y05' 'Y06' 'Y07' 'Y08'}))
     fprintf('morning sessions\n');
-    if ~ismember(phase, {'TD22_M50' 'TD_M100' 'TD22_M150' })
+    if ~ismember(phase, {'TD22_M50' 'TD22_M100' 'TD22_M150' })
         fprintf('wrong animal-phase association!\n');
         return
     end
-elseif all(ismember(animals, {'Y11' 'Y12' 'Y13' 'Y14' 'Y15' 'Y16' 'Y17' 'Y18' 'Y19' 'Y20'}))
+elseif all(ismember(animals, {'Y09' 'Y10' 'Y11' 'Y16' 'Y13' 'Y14' 'Y17' 'Y18' 'Y19' 'Y20' }))
     fprintf('afternoon sessions\n');
     if ~ismember(phase, {'TD22_A50' 'TD22_A100' 'TD22_A150' })
         fprintf('wrong animal-phase association!\n');
@@ -25,7 +25,7 @@ else
     fprintf('unexpected animal number\n');
 end
 
-fname=[];
+fname={};
 if size(animals,2)<2
     fname{1} = ['A_',animals{1}];   %If there is only one animal in a session, make sure the animal is in box A
 else
@@ -78,14 +78,14 @@ max_trials = chapter.max_trials;
 % waitfor(msgbox({['Protocol Time: ',num2str(recdur_min),':',num2str(recdur_sec),' min'],'Start Session?'}));
 
 %%Show message box before starting session
-waitfor(msgbox({'Start Recording and connect laser.',  'Then start session.'}));
+waitfor(msgbox({'Start Recording this session.'}));
 sessionstart = tic;
 %% LED Trigger for Video Intan Alignment
         s1 = ['trialParams2' ' '...
-     num2str(99)...
+     num2str(991)...
             ' ' num2str(0)...
 %             ' ' num2str(current_trial(m).drop_or_not),...
-%             ' ' num2str(chapter.reward_delay),...
+% %             ' ' num2str(chapter.reward_delay),...
 %             ' ' num2str(current_trial(m).rew_size),...
             %' ' num2str(current_trial(m).odorcue_odor_dur),...
             %' ' num2str(current_trial(m).rewardcue_odor_dur),...
@@ -237,7 +237,7 @@ paramsToBCS = tic;
   pause(5);
   
         s1 = ['trialParams2' ' '...
-     num2str(99)...
+     num2str(990)...
             ' ' num2str(0)...
 %             ' ' num2str(current_trial(m).drop_or_not),...
 %             ' ' num2str(chapter.reward_delay),...
@@ -299,7 +299,7 @@ function header_file = CreateHeader(fname)
 
 time = datestr(now,'yymmdd_HHMM');
 header_name = [fname, '_', time, '_protocol'];
-header_directory = 'C:\Users\Anwender\Desktop\TD19_EPhys Recordings\headers';
+header_directory = 'D:\TD22_behavior\Protocols';
 header_file = fullfile(header_directory, header_name);
 
 end
