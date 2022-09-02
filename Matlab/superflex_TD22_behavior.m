@@ -7,7 +7,9 @@
 function superflex_TD22_behavior(phase, animals, COMPort, setup)%, JitterButton)
 %% create header-file, open serial connection to olfactometer.
 
+%"animals" input in superflex_TD22_behavior() needs to be written in a cell array of two strings such as {"Y01" "Y02"}
 %In the TD22 behavioral cohort, odd numbers represent WT(control) animals and even numbers represent D1R-KO (in VS) animals. One animal pair with one WT and one mutant mice is recorded in the same session.      
+
 
 if all(ismember(animals, {'Y01' 'Y02' 'Y03' 'Y04' 'Y05' 'Y06' 'Y07' 'Y08'}))
     fprintf('morning sessions\n');

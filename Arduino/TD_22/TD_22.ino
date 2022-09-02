@@ -35,17 +35,17 @@
 
 #define Pump2Trig  62 //DIGITAL1 was LaserTrig in Mirko's script
 #define FVTrig  63
-#define LaserTrig2  64
+#define LaserTrig2  64 //not used in TD_22
 #define PumpTrig  65
 #define LEDtrig 66
-#define TrialTrig  68
+#define TrialTrig  68 //not used in TD_22
 
 
 
-#define LickPin 67
+#define LickPin 67 //not used in TD_22
 
 
-int lickSol = SOLENOID1;
+int lickSol = SOLENOID1;//used for the reward delivery by Max; not used by Mirko
 int Preloading = 900; //720 in fMRI
 int state = 0;
 int Sensor, Sensor1, Sensor2;
@@ -642,7 +642,7 @@ void loop()
         TrialStartTime = odorcue_OdorOnTime;
         SetValve((uint8_t)1, (uint8_t)fv, (uint8_t)ON);
         odorON = true;
-        digitalWrite(TrialTrig, HIGH);
+        //digitalWrite(TrialTrig, HIGH);
         Serial.println ("Trialstart");
         digitalWrite(FVTrig, HIGH);
         Serial.println ("odorcueOn");
@@ -816,7 +816,7 @@ case 14:
         Serial.println ("End of trial");
         Serial.println (TrialEndTime);
         Serial.println();
-        digitalWrite(TrialTrig, LOW);
+        //digitalWrite(TrialTrig, LOW);
         state = 0;}
       break;
       

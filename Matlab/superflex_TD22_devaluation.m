@@ -4,27 +4,49 @@
 % -> added pause after first and second and before second IR LED trigger
 % -> adjusted tagging script for DAT
 
-function superflex_TD22(COMPort, animals, setup)%, JitterButton)
+function superflex_TD22_devaluation(phase, animals, COMPort, setup)%, JitterButton)
 %% create header-file, open serial connection to olfactometer.
 
-if all(ismember(animals, {'Y01' 'Y02' 'Y03' 'Y04' 'Y05' 'Y06' 'Y07' 'Y08' 'Y09' 'Y10'}))
+%"animals" input in superflex_TD22_behavior() needs to be written in a cell array of two strings such as {"Y01" "Y02"}
+%In the TD22 behavioral cohort, odd numbers represent WT(control) animals and even numbers represent D1R-KO (in VS) animals. One animal pair with one WT and one mutant mice is recorded in the same session.      
+
+
+if all(ismember(animals, {'Y01' 'Y02' 'Y03' 'Y04' 'Y05' 'Y06' 'Y07' 'Y08'}))
     fprintf('morning sessions\n');
-    phase='TD_22_1_morning';
-elseif all(ismember(animals, {'Y11' 'Y12' 'Y13' 'Y14' 'Y15' 'Y16' 'Y17' 'Y18' 'Y19' 'Y20'}))
+    if ~ismember(phase, {'TD22_M50' 'TD22_M100' 'TD22_M150' })
+        fprintf('wrong animal-phase association!\n');
+        return
+    end
+elseif all(ismember(animals, {'Y09' 'Y10' 'Y11' 'Y16' 'Y13' 'Y14' 'Y17' 'Y18' 'Y19' 'Y20' }))
     fprintf('afternoon sessions\n');
-    phase='TD_22_1_afternoon';
+    if ~ismember(phase, {'TD22_A50' 'TD22_A100' 'TD22_A150' })
+        fprintf('wrong animal-phase association!\n');
+        return
+    end
 else
     fprintf('unexpected animal number\n');
 end
 
-if numel(animals) == 2
-    fname = ['A_',animals{1},'+ B_',animals{2}];    %The animal entered first should be in box A and the one entered second should be in box B
-elseif numel(animals) == 1
-    fname = ['A_',animals{1}];  %If there is only one animal in a session, make sure the animal is in box A
+fname={};
+if size(animals,2)<2
+    fname{1} = ['A_',animals{1}];   %If there is only one animal in a session, make sure the animal is in box A
+else
+    fname{1} = ['A_',animals{1}];    %The animal entered first should be in box A and the one entered second should be in box B
+    fname{2} = ['B_',animals{2}];      
 end
+% if numel(animals) == 2
+%     fname = ['A_',animals{1},'+ B_',animals{2}];    %The animal entered first should be in box A and the one entered second should be in box B
+% elseif numel(animals) == 1
+%     fname = ['A_',animals{1}];  %If there is only one animal in a session, make sure the animal is in box A
+% end
+
 
 sessionstart = tic;
-protocol_file = CreateHeader(fname);
+% protocol_file = CreateHeader(fname);
+protocol_file=[];
+for a = 1:size(animals,2)
+    protocol_file{a} = CreateHeader(fname{a});
+end
 s = SetupSerial(COMPort);
 
 %% selection of parameters according to 'phase' input argument
@@ -33,10 +55,18 @@ s = SetupSerial(COMPort);
     session.trialmatrix_concatenated =  session.trialmatrix;
     
 %% set up some initial conditions
-session.name = fname;
+if size(animals,2)>1
+    fname_str=strcat(fname{1},'+ ',fname{2});
+    protocol_file_str = strcat(protocol_file{1},'+ ',protocol_file{2});
+else 
+    fname_str=fname{1};
+    protocol_file_str = protocol_file{1};
+end
+
+session.name = fname_str;
 session.time = now;
 session.chapter = chapter;
-session.header_file = protocol_file;
+session.header_file = protocol_file_str;
 session.setup = setup;
 
 current_chapter = 1;
@@ -50,14 +80,14 @@ max_trials = chapter.max_trials;
 % waitfor(msgbox({['Protocol Time: ',num2str(recdur_min),':',num2str(recdur_sec),' min'],'Start Session?'}));
 
 %%Show message box before starting session
-waitfor(msgbox({'Start Recording and connect laser.',  'Then start session.'}));
+waitfor(msgbox({'Start Recording this session.'}));
 sessionstart = tic;
 %% LED Trigger for Video Intan Alignment
         s1 = ['trialParams2' ' '...
-     num2str(99)...
+     num2str(991)...
             ' ' num2str(0)...
 %             ' ' num2str(current_trial(m).drop_or_not),...
-%             ' ' num2str(chapter.reward_delay),...
+% %             ' ' num2str(chapter.reward_delay),...
 %             ' ' num2str(current_trial(m).rew_size),...
             %' ' num2str(current_trial(m).odorcue_odor_dur),...
             %' ' num2str(current_trial(m).rewardcue_odor_dur),...
@@ -124,6 +154,7 @@ current_trial=table2struct(session.trialmatrix(1:max_trials,:));%(chapterblock*b
             ' ' num2str(current_trial(m).drop_or_not),...
             ' ' num2str(chapter.reward_delay),...
             ' ' num2str(current_trial(m).rew_size),...
+            ' ' num2str(current_trial(m).trialtype),...
             %' ' num2str(current_trial(m).odorcue_odor_dur),...
             %' ' num2str(current_trial(m).rewardcue_odor_dur),...
             ];
@@ -192,7 +223,10 @@ paramsToBCS = tic;
         
         
         session(1).data.trials=data;
-        save(protocol_file, 'session');
+%         save(protocol_file, 'session');
+        for a = 1:size(animals,2)
+            save(protocol_file{a}, 'session');
+        end
         disp('saved');
         pause(ITD);
        
@@ -206,7 +240,7 @@ paramsToBCS = tic;
   pause(5);
   
         s1 = ['trialParams2' ' '...
-     num2str(99)...
+     num2str(990)...
             ' ' num2str(0)...
 %             ' ' num2str(current_trial(m).drop_or_not),...
 %             ' ' num2str(chapter.reward_delay),...
@@ -228,94 +262,12 @@ paramsToBCS = tic;
         end
         pause(2);
 disp('End of paradigm');
-%% Tagging
-disp('Start Tagging');
-    
-%load the case list
-load('C:\Users\Anwender\Desktop\ExperimentalControl_21092018_LW\TD19\Matlab\CaseList');
 
-    
-    % define trial parameters 
-    nt = 30;            %trials per case: 20 for D1 and D2
-    case_num = [412, 414];     %case number from ephys setup: in D1 and D2 [412, 413, 414, 415] 
-    
-    
-% construct trialmatrix2
-trials = repmat(case_num,1,nt)';
-trials = trials(randperm(numel(case_num)*nt));
-
-% pseudorandomness
-while CheckRepetitions(trials,3) > 0
-   trials = trials(randperm(length(trials)));
-end
-
-% fill trials with CaseList information
-for tr = 1:numel(trials)
-   trialmatrix2(tr).trial_num    = tr;
-   trialmatrix2(tr).case_num     = trials(tr);
-   trialmatrix2(tr).case_name    = CaseList([CaseList.case_nr] == trials(tr)).odor_name;
-   trialmatrix2(tr).odor_dur     = CaseList([CaseList.case_nr] == trials(tr)).odor_dur;
-   trialmatrix2(tr).odor_num     = CaseList([CaseList.case_nr] == trials(tr)).odor_num;
-   trialmatrix2(tr).odor_lat     = CaseList([CaseList.case_nr] == trials(tr)).odor_lat;
-   trialmatrix2(tr).laser_pattern= CaseList([CaseList.case_nr] == trials(tr)).laser_pattern;
-   trialmatrix2(tr).laser_lat    = CaseList([CaseList.case_nr] == trials(tr)).laser_lat;
-   trialmatrix2(tr).ITI          = CaseList([CaseList.case_nr] == trials(tr)).ITI;
-end
-
-% define some fixed and useless constants for compatibility with txt-header
-curr_sound_lat = 0;
-curr_odor_stim = 0;
-
-%% loop through trials
-for tr = 1:size(trialmatrix2,2)
-    s1 = ['trialParams2' ' '...
-     num2str(trialmatrix2(tr).laser_pattern)...
-            ' ' (trialmatrix2(tr).laser_lat)
-            ];
-    
-%     s1 = sprintf('%s %d %d %d %d %d\r', 'trialParams2',...
-%         uint16(trialmatrix2(tr).laser_pattern),...
-%         uint16(trialmatrix2(tr).laser_lat));
-%     
-    % sending parameters to BCS
-    try
-        fprintf( s, s1);
-%         fprintf( s, 'temp \r');
-        session.trialmatrix2(tr).status = 1;
-    catch
-        disp('Serial error occurred! Try to restart serial...')
-        ReleaseArduino(s)
-        s = CreateArduinoComm(COMPort);
-        fprintf( s, s1);
-        fprintf( s, 'temp \r');        
-        session.trialmatrix2(tr).status = 0;
-        %beep
-    end
-    
-    % printing parameters of trial in command window
-    fprintf(     '%d%s   %d\t %d\t %d\t %d\t %d\t %d\t %d\n', tr, ': ', trialmatrix2(tr).laser_lat, trialmatrix2(tr).odor_dur, trialmatrix2(tr).odor_lat, trialmatrix2(tr).case_num, trialmatrix2(tr).ITI, curr_sound_lat,curr_odor_stim);
-    disp(['Laser=' num2str(trialmatrix2(tr).laser_pattern) '   Sound=' num2str(0) '   Vial=' num2str(0) '   sound latency=' num2str(0)  '   odor stim=' num2str(trialmatrix2(tr).case_num)]);
-    disp('-------------------------------------------------------------------------------------------------------------------------------------------------------------------');
-    % saving trial parameters to file
-%     fprintf(fid, '%d%s\t %d\t\t %d\t\t %d\t\t %d\t\t %d\t\t %d\t\t %d\n', tr, ': ',  trialmatrix2(tr).laser_lat, trialmatrix2(tr).odor_dur, trialmatrix2(tr).odor_lat, trialmatrix2(tr).case_num, trialmatrix2(tr).ITI, curr_sound_lat,curr_odor_stim);
-    
-        tagging(tr).laser_lat = trialmatrix2(tr).laser_lat;
-        tagging(tr).odor_dur = trialmatrix2(tr).odor_dur;
-        tagging(tr).odor_lat = trialmatrix2(tr).odor_lat;
-        tagging(tr).case_num = trialmatrix2(tr).case_num;
-        tagging(tr).ITI = trialmatrix2(tr).ITI;
-        tagging(tr).sound_lat = curr_sound_lat;
-        tagging(tr).odor_lat = curr_odor_stim;
-    
-        session(1).tagging.trials=tagging;
-        save(protocol_file, 'session');
-        disp('saved');
-        
-    pause((trialmatrix2(tr).ITI/1e3) + (2*rand));
-end
-    
 %% End of session
-    save(protocol_file, 'session');
+%    save(protocol_file, 'session');
+    for a = 1:size(animals,2)
+            save(protocol_file{a}, 'session');
+    end
     disp('end of session saved');
     sessionduration = toc(sessionstart);
     disp('Session duration');
@@ -350,7 +302,7 @@ function header_file = CreateHeader(fname)
 
 time = datestr(now,'yymmdd_HHMM');
 header_name = [fname, '_', time, '_protocol'];
-header_directory = 'C:\Users\Anwender\Desktop\TD19_EPhys Recordings\headers';
+header_directory = 'D:\TD22_behavior\Protocols';
 header_file = fullfile(header_directory, header_name);
 
 end

@@ -2,9 +2,9 @@
 #include <Wire.h> // allows you to communicate with I2C / TWI (two wire interfaces) devices
 //inkludiert weittere libraries
 //<>sucht im libraries Ordner #include SPI.h sucht im Sketch Ordner
-#include <C:\Users\Anwender\Desktop\ExperimentalControl_21092018_LW\ADfunctions\ADfunctions.ino>
-#include <C:\Users\Anwender\Desktop\ExperimentalControl_21092018_LW\ValveControllerComm\ValveControllerComm.ino>
-#include <C:\Users\Anwender\Desktop\ExperimentalControl_21092018_LW\OdorFunctions\OdorFunctions.ino>
+#include <C:\Users\Anwender\Desktop\desktop old\ExperimentalControl_21092018_LW\ADfunctions\ADfunctions.ino>
+#include <C:\Users\Anwender\Desktop\desktop old\ExperimentalControl_21092018_LW\ValveControllerComm\ValveControllerComm.ino>
+#include <C:\Users\Anwender\Desktop\desktop old\ExperimentalControl_21092018_LW\OdorFunctions\OdorFunctions.ino>
 //inkludiert weitere sketches
 
 //#define BEAM1     37 //benennt Variablen, die so verständlicher im Code verwendet werden können
@@ -30,23 +30,23 @@
 #define DIGITAL3 64
 #define DIGITAL4  65
 #define DIGITAL5  66
-#define DIGITAL6  67
+#define DIGITAL6  67 //Digital6 does not seem to work
 #define DIGITAL7  68
 
-#define LaserTrig  62
+#define Pump2Trig  62 //used for grape-flavored reward; DIGITAL1 was LaserTrig in Mirko's script
 #define FVTrig  63
-#define LaserTrig2  64
-#define PumpTrig  65
+#define LaserTrig2  64 //not used in TD_22
+#define PumpTrig  65 //used for cherry flavored reward
 #define LEDtrig 66
-#define TrialTrig  68
+#define TrialTrig  68 //not used in TD_22
 
 
 
-#define LickPin 67
+#define LickPin 67 //not used in TD_22
 
 
-int lickSol = SOLENOID1;
-int Preloading = 800; //720 in fMRI
+int lickSol = SOLENOID1;//used for the reward delivery by Max; not used by Mirko
+int Preloading = 900; //720 in fMRI
 int state = 0;
 int Sensor, Sensor1, Sensor2;
 
@@ -56,9 +56,9 @@ int Sensor, Sensor1, Sensor2;
 //int DropSize, DropNumber;
 
 // some standard parameters that are not included anymore in superflex2000.mat
-uint16_t odor_lat_On= 70; // 480 measured for MRI setup with 3 m odortube
-uint16_t odor_lat_Off= 70;//440 MRI
-uint16_t drop_lat = 240; // 
+uint16_t odor_lat_On= 90; // Mirko's setup was 70; 480 measured for MRI setup with 3 m odortube
+uint16_t odor_lat_Off= 90;//Mirko's setup was 70; MRI 440
+uint16_t drop_lat = 520; // Mirko's setup was 240
 uint16_t  TrialPrep = 1200;
 uint16_t  IOI = 1200;
 uint16_t  state_dur = 1200;
@@ -79,6 +79,7 @@ int reward_delay;
 int reward_size;
 int reward_size2 = 333; //333 default; 100 for Ephys
 int lick_window;
+int trial_type
 //int lick_delay, discovery_help;
 
 //the four variables for StageOne
@@ -123,7 +124,7 @@ void help() {
 } // a fuction that can be called and gives advices/help
 
 void CheckSetFV1() {
-//close FV after odor_dur
+//close FV after odorcue_odor_dur
 currentTime = millis();
   
   if (odorON) {
@@ -143,7 +144,7 @@ currentTime = millis();
 }
 
 void CheckSetFV2() {
-//close FV after odor_dur
+//close FV after rewardcue_odor_dur
   if (odorON) {
     if (currentTime - rewardcue_OdorOnTime > rewardcue_odor_dur) {
 
@@ -175,9 +176,9 @@ void CheckSetFV2() {
 //}
 
 
-void OpenFaucet() {
-  // activate digital pump trigger
-  if (drop_or_not == 1) {
+void CherryPumpOn() {
+  // activate digital pump trigger for the cherry water
+  if (drop_or_not == 1 && ((trial_type == 1)||(trial_type == 5)) ) {
     DropOnTime = millis();
     Serial.println (DropOnTime);
           digitalWrite(65, HIGH);
@@ -193,6 +194,18 @@ void OpenFaucet() {
     //DropOnTime = millis();
   } 
   }
+
+void GrapePumpOn() {
+  // activate digital pump trigger for the grape water
+  if (drop_or_not == 1 && ((trial_type == 3)||(trial_type == 7)) ) {
+    DropOnTime = millis();
+    Serial.println (DropOnTime);
+          digitalWrite(62, HIGH);
+          delay(reward_size2);
+          digitalWrite(62, LOW);
+  } 
+  }
+
 
 void setup() {
   pinMode(ADC_PIN, OUTPUT);
@@ -211,16 +224,16 @@ void setup() {
   pinMode(LickPin, INPUT);
   pinMode(DIGITAL4, OUTPUT);
   pinMode(FVTrig, OUTPUT);
-  //pinMode(LaserTrig, OUTPUT);
- // pinMode(LaserTrig2, OUTPUT);
+  pinMode(LaserTrig, OUTPUT);
+  pinMode(LaserTrig2, OUTPUT);
   pinMode(LEDtrig, OUTPUT);
   pinMode(TrialTrig, OUTPUT);
   
  
   digitalWrite(FVTrig, LOW);
   digitalWrite(DIGITAL4, LOW);
- // digitalWrite(LaserTrig, LOW);
- // digitalWrite(LaserTrig2, LOW);
+  digitalWrite(LaserTrig, LOW);
+  digitalWrite(LaserTrig2, LOW);
   digitalWrite(LEDtrig, LOW);
   digitalWrite(TrialTrig, LOW);
  
@@ -278,6 +291,7 @@ void loop()
             reward_active = drop_or_not;
             reward_delay = (int)atoi(argv[4]);
             reward_size = (int)atoi(argv[5]);
+            trial_type = (int)atoi(argv[6]); //trialtype 1&5 (C->R) leads to cherry-flavored R, trialtype 3&7 (D->R) leads to grape-flavored R
             //odorcue_odor_dur = (int)atoi(argv[6]);
             //rewardcue_odor_dur = (int)atoi(argv[7]);
             lick_window = 7500;
@@ -306,19 +320,34 @@ void loop()
             
             state = 100;
           }
-       
+        //experiment for Lennart: odors paired with laser-stim
+          if (strcmp(argv[0], "trialParams3") == 0) {
+            
+            laser_active   = (int)atoi(argv[1]); //atoi: string/ascii zu Int;
+            ITI = (int)atoi(argv[2]);//laser_lat   = (int)atoi(argv[2]);
+            odor_num = (int)atoi(argv[3]);
+            odor_lat = (int)atoi(argv[4]);
+            odor_dur = (int)atoi(argv[5]);
+            odorON = false;
+            
+            startTime = millis();
+            Serial.println(startTime);
+            Serial.println ("startTime");
+            
+            state = 300;
+          }          
       //in the following several cases for simple control via serial Monitor are defined
-          
+
+      
        // tt= Trialtest
-       // tt1/2 testing valves for vial 5, 6, 7, 8
-       
+       // tt1/2 testing valves for vial 5, 10, 7, 8
                    if (strcmp(argv[0], "tt1") == 0) {
        // == 0 means strings are equal
 
             odorcue_odor_dur = 1240;
             rewardcue_odor_dur =1240;
             odorcue_odor_num   = 5; //atoi: string/ascii zu Int;
-            rewardcue_odor_num   = 6;
+            rewardcue_odor_num   = 10;
             IOI = 1200;
             drop_or_not = 0;
             reward_active = drop_or_not;
@@ -368,7 +397,68 @@ void loop()
             Serial.println (startTime);
             state = 1; }
             
+           //lasertest    laser 1 
+           if (strcmp(argv[0], "tt3") == 0) {
+   
+           laser_pattern = 2; //
+           laser_lat = 0;
+           delay (1);
+            startTime = millis();
+            Serial.println("startTime");
+            Serial.println (startTime);
+           state = 100;}
            
+           //lasertest    laser 2+3 
+           if (strcmp(argv[0], "tt4") == 0) {
+   
+           laser_pattern = 6; //
+           laser_lat = 0;
+           delay (1);
+            startTime = millis();
+            Serial.println("startTime");
+            Serial.println (startTime);
+           state = 100;}    
+    
+       // all lasers on for 1min
+           if (strcmp(argv[0], "tt5") == 0) {
+   
+           laser_pattern = 100;
+           laser_lat = 0;
+           delay (1);
+            startTime = millis();
+            Serial.println("startTime");
+            Serial.println (startTime);
+           state = 100;}
+           
+    // test LED  
+           if (strcmp(argv[0], "led") == 0) {
+           digitalWrite(LEDtrig,HIGH);
+           delay(1000);
+           digitalWrite(LEDtrig,LOW);
+           state = 0;}    
+           
+     // test Laser 1: 10x1s pulses + 2min on  
+           if (strcmp(argv[0], "tt6") == 0) {
+   
+           laser_pattern = 101;
+           laser_lat = 0;
+           delay (1);
+            startTime = millis();
+            Serial.println("startTime");
+            Serial.println (startTime);
+           state = 100;}    
+          
+    // test Laser 2: 10x1s pulses + 2min on  
+           if (strcmp(argv[0], "tt7") == 0) {
+   
+           laser_pattern = 102;
+           laser_lat = 0;
+           delay (1);
+            startTime = millis();
+            Serial.println("startTime");
+            Serial.println (startTime);
+           state = 100;}    
+
     //test vial 9 with laser
        if (strcmp(argv[0], "tt9") == 0) {
        // == 0 means strings are equal
@@ -438,7 +528,7 @@ void loop()
             Serial.println (startTime);
             state = 300; }
     
-          
+
              
           else if (strcmp(argv[0], "valve") == 0) {
             ValveOnOff(c);
@@ -471,8 +561,14 @@ void loop()
             ReadDigitalChannel(c);
           }
 
-
-          else  if (strcmp(argv[0], "drop") == 0)  {
+             
+          if (strcmp(argv[0],"grape") == 0) {//"fakedrop" pump becomes grape-water pump
+            digitalWrite(DIGITAL1, HIGH);
+            delay(reward_size2);
+            digitalWrite(DIGITAL1, LOW);
+          }
+          
+          else  if (strcmp(argv[0], "cherry") == 0)  {
             digitalWrite(lickSol, HIGH);              // initial drop for more motivation
             //SetValve((uint8_t)1, (uint8_t)4, (uint8_t)ON);            
             digitalWrite(DIGITAL4, HIGH);
@@ -560,7 +656,7 @@ void loop()
         TrialStartTime = odorcue_OdorOnTime;
         SetValve((uint8_t)1, (uint8_t)fv, (uint8_t)ON);
         odorON = true;
-        digitalWrite(TrialTrig, HIGH);
+        //digitalWrite(TrialTrig, HIGH);
         Serial.println ("Trialstart");
         digitalWrite(FVTrig, HIGH);
         Serial.println ("odorcueOn");
@@ -672,23 +768,41 @@ void loop()
       //CloseFaucet();
 
 
-      // for open false faucet
+      // if there is no reward
      if (drop_or_not == 0 && (currentTime - perc_rewardcue_OdorOffTime > reward_delay - drop_lat))  
      {
        
         DropOnTimefake = millis();
         Serial.println ("Dropfake");
         Serial.println (DropOnTimefake);
+//        digitalWrite(DIGITAL1, HIGH);
+//        delay(reward_size2);
+//        digitalWrite(DIGITAL1, LOW);
      state = 12; 
-
      }
 
-        if (drop_or_not == 1 && (currentTime - perc_rewardcue_OdorOffTime > reward_delay - drop_lat)) {       
+        // turn on either the pump for cherry-water or grape-water
+        if (drop_or_not == 1 &&  (currentTime - perc_rewardcue_OdorOffTime > reward_delay - drop_lat)) {
+         if (trial_type == 1 || trial_type == 5) {
+         // C -> cherry-flavored reward
+          CherryPumpOn();
+         }
+         else (trial_type == 3 || trial_type == 7) {
+         // D -> grape-flavored reward
+          GrapePumpOn();
+         }       
         Serial.println ("Drop");
-        OpenFaucet();                
+                     
       state = 12;
       }
       break;
+
+//      if (drop_or_not == 1 && (currentTime - perc_rewardcue_OdorOffTime > reward_delay - drop_lat)) {       
+//        Serial.println ("Drop");
+//        OpenFaucet();                
+//      state = 12;
+//      }
+//      break;
 
      case 12: //perc_drop
       currentTime = millis();
@@ -732,22 +846,423 @@ case 14:
         Serial.println ("End of trial");
         Serial.println (TrialEndTime);
         Serial.println();
-        digitalWrite(TrialTrig, LOW);
+        //digitalWrite(TrialTrig, LOW);
         state = 0;}
       break;
       
-//LED trigger
+//Laser and LED trigger
 
 case 100:
         digitalWrite(TrialTrig, HIGH);
         currentTime = millis();
           if (currentTime - startTime >= laser_lat) {
-         
+            
+      ////Laser 1////
+      
+              if (laser_pattern == 2) {        //MSN tagging: 1s, 40Hz, 5 ms pulse 
+          for (int xi=0; xi < 40; xi++){
+          digitalWrite(LaserTrig, HIGH);
+          //digitalWrite(LEDtrig, HIGH);
+          delayMicroseconds(5000);
+          //digitalWrite(LEDtrig, LOW);
+          digitalWrite(LaserTrig, LOW);
+          delay(20);
+          }
+        }
+        
+        if (laser_pattern == 3) {        //MSN tagging 1s, 40Hz, 12,5 ms pulse 
+          for (int xi=0; xi < 40; xi++){
+          digitalWrite(LaserTrig, HIGH);
+          //digitalWrite(LEDtrig, HIGH);
+          delayMicroseconds(12500);
+          //digitalWrite(LEDtrig, LOW);
+          digitalWrite(LaserTrig, LOW);
+          delayMicroseconds(12500);
+          }
+        }
+
+        if (laser_pattern == 4) {        //MSN tagging 6 pulse, 40 Hz, 5ms 
+          for (int xi=0; xi < 6; xi++){
+          digitalWrite(LaserTrig, HIGH);
+          delayMicroseconds(5000);
+          digitalWrite(LaserTrig, LOW);
+          delay(20);
+          }
+        }
+
+        if (laser_pattern == 5) {        //MSN tagging 6 pulse, 10 Hz, 5ms 
+          for (int xi=0; xi < 6; xi++){
+          digitalWrite(LaserTrig, HIGH);
+          delayMicroseconds(5000);
+          digitalWrite(LaserTrig, LOW);
+          delayMicroseconds(5000);          
+          delay(90);
+          }
+        }
+        if (laser_pattern == 9) {        //MSN tagging 10 pulse, 40 Hz, 5ms 
+          for (int xi=0; xi < 10; xi++){
+          digitalWrite(LaserTrig, HIGH);
+          delayMicroseconds(5000);
+          digitalWrite(LaserTrig, LOW);       
+          delay(20);
+          }
+        } 
+        if (laser_pattern == 11) {        //MSN tagging 10 pulse, 10 Hz, 5ms 
+          for (int xi=0; xi < 10; xi++){
+          digitalWrite(LaserTrig, HIGH);
+          delayMicroseconds(5000);
+          digitalWrite(LaserTrig, LOW);
+          delayMicroseconds(5000);          
+          delay(90);
+          }
+        }               
+        
+          ////Laser 2////
+
+        if (laser_pattern == 6) {        //MSN tagging: 1s, 40Hz, 5 ms pulse 
+          for (int xi=0; xi < 40; xi++){
+          digitalWrite(LaserTrig2, HIGH);
+          //digitalWrite(LEDtrig, HIGH);
+          delayMicroseconds(5000);
+          //digitalWrite(LEDtrig, LOW);
+          digitalWrite(LaserTrig2, LOW);
+          delay(20);
+          }
+        }
+
+
+//        old case 405, used until 27thFeb2020 
+//        if (laser_pattern == 6) {        //MSN tagging 1s, 40Hz, 12,5 ms pulse 
+//          for (int xi=0; xi < 40; xi++){
+//          digitalWrite(LaserTrig2, HIGH);
+//          //digitalWrite(LEDtrig, HIGH);
+//          delayMicroseconds(12500);
+//          //digitalWrite(LEDtrig, LOW);
+//          digitalWrite(LaserTrig2, LOW);
+//          delayMicroseconds(12500);
+//          }
+//        }
+//        
+        
+        
+        
+
+        if (laser_pattern == 7) {        //MSN tagging 6 pulse, 40 Hz, 5ms 
+          for (int xi=0; xi < 6; xi++){
+          digitalWrite(LaserTrig2, HIGH);
+          delayMicroseconds(5000);
+          digitalWrite(LaserTrig2, LOW);
+          delay(20);
+          }
+        }
+
+        if (laser_pattern == 8) {        //MSN tagging 6 pulse, 10 Hz, 5ms 
+          for (int xi=0; xi < 6; xi++){
+          digitalWrite(LaserTrig2, HIGH);
+          delayMicroseconds(5000);
+          digitalWrite(LaserTrig2, LOW);
+          delayMicroseconds(5000);          
+          delay(90);
+          }
+        }        
+        if (laser_pattern == 10) {        //MSN tagging 10 pulse, 40 Hz, 5ms 
+          for (int xi=0; xi < 10; xi++){
+          digitalWrite(LaserTrig2, HIGH);
+          delayMicroseconds(5000);
+          digitalWrite(LaserTrig2, LOW);       
+          delay(20);
+          }
+        } 
+        if (laser_pattern == 12) {        //MSN tagging 10 pulse, 10 Hz, 5ms 
+          for (int xi=0; xi < 10; xi++){
+          digitalWrite(LaserTrig2, HIGH);
+          delayMicroseconds(5000);
+          digitalWrite(LaserTrig2, LOW);
+          delayMicroseconds(5000);          
+          delay(90);
+          }
+        }               
+
+        if (laser_pattern == 13) {        //MSN tagging 10 pulses, 2Hz, 5 ms pulse 
+          for (int xi=0; xi < 10; xi++){
+          digitalWrite(LaserTrig2, HIGH);
+          //digitalWrite(LEDtrig, HIGH);
+          delayMicroseconds(5000);
+          //digitalWrite(LEDtrig, LOW);
+          digitalWrite(LaserTrig2, LOW);
+          delayMicroseconds(5000);
+          delay(490);
+          }
+        }
+
+        if (laser_pattern == 14) {        //MSN tagging 10 pulses, 4Hz, 5 ms pulse 
+          for (int xi=0; xi < 10; xi++){
+          digitalWrite(LaserTrig2, HIGH);
+          //digitalWrite(LEDtrig, HIGH);
+          delayMicroseconds(5000);
+          //digitalWrite(LEDtrig, LOW);
+          digitalWrite(LaserTrig2, LOW);
+          delayMicroseconds(5000);
+          delay(240);
+          }
+        }
+
+        if (laser_pattern == 15) {        //MSN tagging 10 pulses, 8Hz, 5 ms pulse 
+          for (int xi=0; xi < 10; xi++){
+          digitalWrite(LaserTrig2, HIGH);
+          //digitalWrite(LEDtrig, HIGH);
+          delayMicroseconds(5000);
+          //digitalWrite(LEDtrig, LOW);
+          digitalWrite(LaserTrig2, LOW);
+          delay(120);
+          }
+        }
+        
+        if (laser_pattern == 16) {        //MSN tagging 10 pulses, 16Hz, 5 ms pulse 
+          for (int xi=0; xi < 10; xi++){
+          digitalWrite(LaserTrig2, HIGH);
+          //digitalWrite(LEDtrig, HIGH);
+          delayMicroseconds(5000);
+          //digitalWrite(LEDtrig, LOW);
+          digitalWrite(LaserTrig2, LOW);
+          delayMicroseconds(7500);
+          delay(50);
+          }
+        }
+
+        if (laser_pattern == 17) {        //MSN tagging 10 pulses, 32Hz, 5 ms pulse 
+          for (int xi=0; xi < 10; xi++){
+          digitalWrite(LaserTrig2, HIGH);
+          //digitalWrite(LEDtrig, HIGH);
+          delayMicroseconds(5000);
+          //digitalWrite(LEDtrig, LOW);
+          digitalWrite(LaserTrig2, LOW);
+          delayMicroseconds(6250);
+          delay(20);
+          }
+        }
+        
+        if (laser_pattern == 18) {        //MSN tagging 1s, 2Hz, 5 ms pulse 
+          for (int xi=0; xi < 2; xi++){
+          digitalWrite(LaserTrig2, HIGH);
+          //digitalWrite(LEDtrig, HIGH);
+          delayMicroseconds(5000);
+          //digitalWrite(LEDtrig, LOW);
+          digitalWrite(LaserTrig2, LOW);
+          delayMicroseconds(5000);
+          delay(490);
+          }
+        }
+ 
+        if (laser_pattern == 19) {        //MSN tagging 1s, 4Hz, 5 ms pulse 
+          for (int xi=0; xi < 4; xi++){
+          digitalWrite(LaserTrig2, HIGH);
+          //digitalWrite(LEDtrig, HIGH);
+          delayMicroseconds(5000);
+          //digitalWrite(LEDtrig, LOW);
+          digitalWrite(LaserTrig2, LOW);
+          delayMicroseconds(5000);
+          delay(240);
+          }
+        }
+
+        if (laser_pattern == 20) {        //MSN tagging 1s, 8Hz, 5 ms pulse 
+          for (int xi=0; xi < 8; xi++){
+          digitalWrite(LaserTrig2, HIGH);
+          //digitalWrite(LEDtrig, HIGH);
+          delayMicroseconds(5000);
+          //digitalWrite(LEDtrig, LOW);
+          digitalWrite(LaserTrig2, LOW);
+          delay(120);
+          }
+        }
+
+        if (laser_pattern == 21) {        //MSN tagging 1s, 16Hz, 5 ms pulse 
+          for (int xi=0; xi < 16; xi++){
+          digitalWrite(LaserTrig2, HIGH);
+          //digitalWrite(LEDtrig, HIGH);
+          delayMicroseconds(5000);
+          //digitalWrite(LEDtrig, LOW);
+          digitalWrite(LaserTrig2, LOW);
+          delayMicroseconds(7500);
+          delay(50);
+          }
+        }
+
+        if (laser_pattern == 22) {        //MSN tagging 1s, 32Hz, 5 ms pulse 
+          for (int xi=0; xi < 32; xi++){
+          digitalWrite(LaserTrig2, HIGH);
+          //digitalWrite(LEDtrig, HIGH);
+          delayMicroseconds(5000);
+          //digitalWrite(LEDtrig, LOW);
+          digitalWrite(LaserTrig2, LOW);
+          delayMicroseconds(6250);
+          delay(20);
+          }
+        }
+        if (laser_pattern == 23) {        //DAT tagging 10 pulses, 2Hz, 5 ms pulse 
+          for (int xi=0; xi < 10; xi++){
+          digitalWrite(LaserTrig, HIGH);
+          //digitalWrite(LEDtrig, HIGH);
+          delayMicroseconds(5000);
+          //digitalWrite(LEDtrig, LOW);
+          digitalWrite(LaserTrig, LOW);
+          delayMicroseconds(5000);
+          delay(490);
+          }
+        }
+
+        if (laser_pattern == 24) {        //DAT tagging 10 pulses, 4Hz, 5 ms pulse 
+          for (int xi=0; xi < 10; xi++){
+          digitalWrite(LaserTrig, HIGH);
+          //digitalWrite(LEDtrig, HIGH);
+          delayMicroseconds(5000);
+          //digitalWrite(LEDtrig, LOW);
+          digitalWrite(LaserTrig, LOW);
+          delayMicroseconds(5000);
+          delay(240);
+          }
+        }
+
+        if (laser_pattern == 25) {        //DAT tagging 10 pulses, 8Hz, 5 ms pulse 
+          for (int xi=0; xi < 10; xi++){
+          digitalWrite(LaserTrig, HIGH);
+          //digitalWrite(LEDtrig, HIGH);
+          delayMicroseconds(5000);
+          //digitalWrite(LEDtrig, LOW);
+          digitalWrite(LaserTrig, LOW);
+          delay(120);
+          }
+        }
+        
+        if (laser_pattern == 26) {        //DAT tagging 10 pulses, 16Hz, 5 ms pulse 
+          for (int xi=0; xi < 10; xi++){
+          digitalWrite(LaserTrig, HIGH);
+          //digitalWrite(LEDtrig, HIGH);
+          delayMicroseconds(5000);
+          //digitalWrite(LEDtrig, LOW);
+          digitalWrite(LaserTrig, LOW);
+          delayMicroseconds(7500);
+          delay(50);
+          }
+        }
+
+        if (laser_pattern == 27) {        //DAT tagging 10 pulses, 32Hz, 5 ms pulse 
+          for (int xi=0; xi < 10; xi++){
+          digitalWrite(LaserTrig, HIGH);
+          //digitalWrite(LEDtrig, HIGH);
+          delayMicroseconds(5000);
+          //digitalWrite(LEDtrig, LOW);
+          digitalWrite(LaserTrig, LOW);
+          delayMicroseconds(6250);
+          delay(20);
+          }
+        }
+        
+        if (laser_pattern == 28) {        //DAT tagging 1s, 2Hz, 5 ms pulse 
+          for (int xi=0; xi < 2; xi++){
+          digitalWrite(LaserTrig, HIGH);
+          //digitalWrite(LEDtrig, HIGH);
+          delayMicroseconds(5000);
+          //digitalWrite(LEDtrig, LOW);
+          digitalWrite(LaserTrig, LOW);
+          delayMicroseconds(5000);
+          delay(490);
+          }
+        }
+ 
+        if (laser_pattern == 29) {        //DAT tagging 1s, 4Hz, 5 ms pulse 
+          for (int xi=0; xi < 4; xi++){
+          digitalWrite(LaserTrig, HIGH);
+          //digitalWrite(LEDtrig, HIGH);
+          delayMicroseconds(5000);
+          //digitalWrite(LEDtrig, LOW);
+          digitalWrite(LaserTrig, LOW);
+          delayMicroseconds(5000);
+          delay(240);
+          }
+        }
+
+        if (laser_pattern == 30) {        //DAT tagging 1s, 8Hz, 5 ms pulse 
+          for (int xi=0; xi < 8; xi++){
+          digitalWrite(LaserTrig, HIGH);
+          //digitalWrite(LEDtrig, HIGH);
+          delayMicroseconds(5000);
+          //digitalWrite(LEDtrig, LOW);
+          digitalWrite(LaserTrig, LOW);
+          delay(120);
+          }
+        }
+
+        if (laser_pattern == 31) {        //DAT tagging 1s, 16Hz, 5 ms pulse 
+          for (int xi=0; xi < 16; xi++){
+          digitalWrite(LaserTrig, HIGH);
+          //digitalWrite(LEDtrig, HIGH);
+          delayMicroseconds(5000);
+          //digitalWrite(LEDtrig, LOW);
+          digitalWrite(LaserTrig, LOW);
+          delayMicroseconds(7500);
+          delay(50);
+          }
+        }
+
+        if (laser_pattern == 32) {        //DAT tagging 1s, 32Hz, 5 ms pulse 
+          for (int xi=0; xi < 32; xi++){
+          digitalWrite(LaserTrig, HIGH);
+          //digitalWrite(LEDtrig, HIGH);
+          delayMicroseconds(5000);
+          //digitalWrite(LEDtrig, LOW);
+          digitalWrite(LaserTrig, LOW);
+          delayMicroseconds(6250);
+          delay(20);
+          }
+        }               
         if(laser_pattern == 99) {        //led stim for video-intan sync
           
           digitalWrite(LEDtrig, HIGH);
           delay(1000);
           digitalWrite(LEDtrig, LOW);}
+
+        if(laser_pattern == 991) {        //turn on red light
+          
+          digitalWrite(LEDtrig, HIGH);}
+
+        if(laser_pattern == 990) {        //turn off red light
+                    
+          digitalWrite(LEDtrig, LOW);}
+ 
+     
+       if(laser_pattern == 100) {        //all lasers on for 2min
+          
+          digitalWrite(LaserTrig, HIGH);
+          digitalWrite(LaserTrig2, HIGH);
+          delay(120000);
+          digitalWrite(LaserTrig, LOW);
+          digitalWrite(LaserTrig2, LOW);}
+          
+       if(laser_pattern == 101) {        //Lasertest 1
+       
+          for (int xi=0; xi < 10; xi++){
+          digitalWrite(LaserTrig, HIGH);
+          delay(1000);
+          digitalWrite(LaserTrig, LOW);
+          delay(1000);    }
+          
+          digitalWrite(LaserTrig, HIGH);
+          delay(120000);
+          digitalWrite(LaserTrig, LOW);}
+
+       if(laser_pattern == 102) {        //Lasertest 2
+
+          for (int xi=0; xi < 10; xi++){
+          digitalWrite(LaserTrig2, HIGH);
+          delay(1000);
+          digitalWrite(LaserTrig2, LOW);
+          delay(1000);    }
+          
+          digitalWrite(LaserTrig2, HIGH);
+          delay(120000);
+          digitalWrite(LaserTrig2, LOW);}          
      
           state = 0;}
           break;
@@ -799,5 +1314,75 @@ case 100:
           state = 200;
       }
       break;           
-    }
-    }
+    
+case 300:
+     //open vial for odor preloading
+      
+          currentTime = millis();       
+          if (currentTime - startTime > TrialPrep - Preloading - odor_lat_On){
+          if (odor_num > 0) {
+          VialOn ((uint8_t)1, (uint8_t)odor_num);
+          SetValve((uint8_t)1, (uint8_t)7, (uint8_t)ON);}        
+          
+          Serial.println ("Preloading");
+          Serial.println (currentTime);
+          //delay(1000);
+          state = 301;
+          }
+      break;
+
+// open FV 
+    case 301:
+      currentTime = millis();
+      if  (!odorON &&(currentTime - startTime > TrialPrep - odor_lat_On)) {
+      if (odor_num > 0) {
+        SetValve((uint8_t)1, (uint8_t)fv, (uint8_t)ON);
+        digitalWrite(FVTrig, HIGH);
+      }
+        odorON = true;
+        OdorOnTime = millis();
+        Serial.println("OdorOn");
+        Serial.println(OdorOnTime);       
+
+        state = 302;
+      }
+      break;
+
+    case 302: // laser 
+        currentTime = millis();
+        if(currentTime - startTime > TrialPrep){
+        Serial.println("Laser");         
+         if (laser_active > 0) {      //odor with laser pulses in VTA       
+        Serial.println("On");
+          for (int xi=0; xi < 12; xi++){
+          digitalWrite(LaserTrig, HIGH);
+          delayMicroseconds(5000);
+          digitalWrite(LaserTrig, LOW);
+          delay(20);
+          }
+        }
+        currentTime = millis();
+        Serial.println("Off");
+        Serial.println (currentTime);        
+          state =303;
+      }
+      break;
+       
+
+     case 303: // close FV
+      currentTime = millis();
+      if  (odorON &&(currentTime - OdorOnTime> odor_dur)) {
+      if (odor_num > 0) {  
+      SetValve((uint8_t)1, (uint8_t)fv, (uint8_t)OFF);
+      VialOff ((uint8_t)1, (uint8_t)odor_num);
+      SetValve((uint8_t)1, (uint8_t)7, (uint8_t)OFF); 
+      digitalWrite(FVTrig, LOW); }     
+      odorON = false;
+      Serial.println("OdorOff");
+      Serial.println("EndofTrial");            
+      Serial.println (currentTime);        
+      state = 0;
+      }
+      break; 
+  }
+}
