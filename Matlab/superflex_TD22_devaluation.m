@@ -128,19 +128,19 @@ current_trial=table2struct(session.trialmatrix(1:max_trials,:));%(chapterblock*b
  
         switch current_trial(m).trialtype
             case 1
-                disp('A->C->Reward')
+                disp('A->C->Cherry')
             case 2
                 disp('A->C->NoReward')
             case 3
-                disp('A->D->Reward')
+                disp('A->D->Grape')
             case 4
                 disp('A->D->NoReward')
             case 5
-                disp('B->C->Reward')
+                disp('B->C->Cherry')
             case 6
                 disp('B->C->NoReward')
             case 7
-                disp('B->D->Reward')
+                disp('B->D->Grape')
             case 8
                 disp('B->D->NoReward')
         end

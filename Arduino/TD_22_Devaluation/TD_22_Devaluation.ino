@@ -31,21 +31,23 @@
 #define DIGITAL4  65
 #define DIGITAL5  66
 #define DIGITAL6  67 //Digital6 does not seem to work
-#define DIGITAL7  68
+#define DIGITAL7  68 //Digital7 does not seem to work
 
-#define Pump2Trig  62 //used for grape-flavored reward; DIGITAL1 was LaserTrig in Mirko's script
+
+#define DummyPumpTrig  62 //DIGITAL1 was LaserTrig in Mirko's script
 #define FVTrig  63
-#define LaserTrig2  64 //not used in TD_22
-#define PumpTrig  65 //used for cherry flavored reward
+#define LaserTrig2  64
+#define CherryPumpTrig  65
 #define LEDtrig 66
-#define TrialTrig  68 //not used in TD_22
+#define TrialTrig  68
+#define GrapePumpTrig  64
 
 
 
-#define LickPin 67 //not used in TD_22
+#define LickPin 67
 
 
-int lickSol = SOLENOID1;//used for the reward delivery by Max; not used by Mirko
+int lickSol = SOLENOID1;
 int Preloading = 900; //720 in fMRI
 int state = 0;
 int Sensor, Sensor1, Sensor2;
@@ -79,7 +81,7 @@ int reward_delay;
 int reward_size;
 int reward_size2 = 333; //333 default; 100 for Ephys
 int lick_window;
-int trial_type
+int trial_type;
 //int lick_delay, discovery_help;
 
 //the four variables for StageOne
@@ -124,7 +126,7 @@ void help() {
 } // a fuction that can be called and gives advices/help
 
 void CheckSetFV1() {
-//close FV after odorcue_odor_dur
+//close FV after odor_dur
 currentTime = millis();
   
   if (odorON) {
@@ -144,7 +146,7 @@ currentTime = millis();
 }
 
 void CheckSetFV2() {
-//close FV after rewardcue_odor_dur
+//close FV after odor_dur
   if (odorON) {
     if (currentTime - rewardcue_OdorOnTime > rewardcue_odor_dur) {
 
@@ -175,15 +177,14 @@ void CheckSetFV2() {
 //  }
 //}
 
-
 void CherryPumpOn() {
   // activate digital pump trigger for the cherry water
   if (drop_or_not == 1 && ((trial_type == 1)||(trial_type == 5)) ) {
     DropOnTime = millis();
     Serial.println (DropOnTime);
-          digitalWrite(65, HIGH);
+          digitalWrite(CherryPumpTrig, HIGH);
           delay(reward_size2);
-          digitalWrite(65, LOW);
+          digitalWrite(CherryPumpTrig, LOW);
     //DropOffTime = millis;
     //Serial.println("OpenFaucet");
     //digitalWrite(lickSol, HIGH);
@@ -200,13 +201,12 @@ void GrapePumpOn() {
   if (drop_or_not == 1 && ((trial_type == 3)||(trial_type == 7)) ) {
     DropOnTime = millis();
     Serial.println (DropOnTime);
-          digitalWrite(62, HIGH);
+          digitalWrite(GrapePumpTrig, HIGH);
           delay(reward_size2);
-          digitalWrite(62, LOW);
+          digitalWrite(GrapePumpTrig, LOW);
   } 
   }
-
-
+  
 void setup() {
   pinMode(ADC_PIN, OUTPUT);
   pinMode(DAC1_PIN, OUTPUT);
@@ -222,20 +222,22 @@ void setup() {
   pinMode(SOLENOID7, OUTPUT);
   pinMode(SOLENOID8, OUTPUT);
   pinMode(LickPin, INPUT);
-  pinMode(DIGITAL4, OUTPUT);
+  pinMode(CherryPumpTrig, OUTPUT);
   pinMode(FVTrig, OUTPUT);
-  pinMode(LaserTrig, OUTPUT);
+  pinMode(DummyPumpTrig, OUTPUT);
   pinMode(LaserTrig2, OUTPUT);
   pinMode(LEDtrig, OUTPUT);
   pinMode(TrialTrig, OUTPUT);
+  pinMode(GrapePumpTrig, OUTPUT);
   
  
   digitalWrite(FVTrig, LOW);
-  digitalWrite(DIGITAL4, LOW);
-  digitalWrite(LaserTrig, LOW);
+  digitalWrite(CherryPumpTrig, LOW);
+  digitalWrite(DummyPumpTrig, LOW);
   digitalWrite(LaserTrig2, LOW);
   digitalWrite(LEDtrig, LOW);
   digitalWrite(TrialTrig, LOW);
+  digitalWrite(GrapePumpTrig, LOW);
  
   pinMode(0, OUTPUT);
   digitalWrite(0, LOW);
@@ -562,21 +564,28 @@ void loop()
           }
 
              
-          if (strcmp(argv[0],"grape") == 0) {//"fakedrop" pump becomes grape-water pump
-            digitalWrite(DIGITAL1, HIGH);
+          if (strcmp(argv[0],"fakedrop") == 0) {
+            digitalWrite(DummyPumpTrig, HIGH);
             delay(reward_size2);
-            digitalWrite(DIGITAL1, LOW);
+            digitalWrite(DummyPumpTrig, LOW);
           }
           
-          else  if (strcmp(argv[0], "cherry") == 0)  {
-            digitalWrite(lickSol, HIGH);              // initial drop for more motivation
+          else  if (strcmp(argv[0], "cherrydrop") == 0)  {
+            //digitalWrite(lickSol, HIGH);              // initial drop for more motivation
             //SetValve((uint8_t)1, (uint8_t)4, (uint8_t)ON);            
-            digitalWrite(DIGITAL4, HIGH);
+            digitalWrite(CherryPumpTrig, HIGH);
             delay(reward_size2);
             //SetValve((uint8_t)1, (uint8_t)4, (uint8_t)OFF);
-            digitalWrite(lickSol, LOW);
-            digitalWrite(DIGITAL4, LOW);
+            //digitalWrite(lickSol, LOW);
+            digitalWrite(CherryPumpTrig, LOW);
           }
+
+          else if (strcmp(argv[0],"grapedrop") == 0) {
+            digitalWrite(GrapePumpTrig, HIGH);
+            delay(reward_size2);
+            digitalWrite(GrapePumpTrig, LOW);
+          }
+          
           else  if (strcmp(argv[0], "fill") == 0)  {
             digitalWrite(lickSol, HIGH);              // initial drop for more motivation
             SetValve((uint8_t)1, (uint8_t)4, (uint8_t)ON);            
@@ -656,7 +665,7 @@ void loop()
         TrialStartTime = odorcue_OdorOnTime;
         SetValve((uint8_t)1, (uint8_t)fv, (uint8_t)ON);
         odorON = true;
-        //digitalWrite(TrialTrig, HIGH);
+        digitalWrite(TrialTrig, HIGH);
         Serial.println ("Trialstart");
         digitalWrite(FVTrig, HIGH);
         Serial.println ("odorcueOn");
@@ -775,9 +784,9 @@ void loop()
         DropOnTimefake = millis();
         Serial.println ("Dropfake");
         Serial.println (DropOnTimefake);
-//        digitalWrite(DIGITAL1, HIGH);
-//        delay(reward_size2);
-//        digitalWrite(DIGITAL1, LOW);
+        digitalWrite(DummyPumpTrig, HIGH);
+        delay(reward_size2);
+        digitalWrite(DummyPumpTrig, LOW);
      state = 12; 
      }
 
@@ -787,7 +796,7 @@ void loop()
          // C -> cherry-flavored reward
           CherryPumpOn();
          }
-         else (trial_type == 3 || trial_type == 7) {
+         else if(trial_type == 3 || trial_type == 7) {
          // D -> grape-flavored reward
           GrapePumpOn();
          }       
@@ -846,7 +855,7 @@ case 14:
         Serial.println ("End of trial");
         Serial.println (TrialEndTime);
         Serial.println();
-        //digitalWrite(TrialTrig, LOW);
+        digitalWrite(TrialTrig, LOW);
         state = 0;}
       break;
       
