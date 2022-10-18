@@ -5,7 +5,7 @@ close all
 % shuffle random number generator
 rng shuffle;
 
-trials_per_block = 50;
+trials_per_block = 50; %create blocks of 50 trials
 perc_randomness = 5; % percentage of most random vectors to select
 perc_std_diff = 15;
 
@@ -16,16 +16,17 @@ perc_std_diff = 15;
 %% order of different trial types in a block -> type 1 to 8
 
 
-
+%generate contingency of the 8 different trial types in a 50-trial block (the number of each trial type in a 50-trial block) 
 my_vect =[ones(floor(trials_per_block*0.32),1);ones(ceil(trials_per_block*0.08),1)*2;ones(ceil(trials_per_block*0.02),1)*3;ones(floor(trials_per_block*0.08),1)*4;
 ones(floor(trials_per_block*0.08),1)*5;ones(ceil(trials_per_block*0.02),1)*6;ones(ceil(trials_per_block*0.08),1)*7;ones(floor(trials_per_block*0.32),1)*8];
 
-num_permutations = 100000;
+num_permutations = 100000; 
 
 type_perm_mtx = zeros(numel(my_vect),num_permutations);
 type_perm_Q = zeros(1,num_permutations);
 type_perm_std = zeros(1,num_permutations);
 
+%Generate 100000 permutation with the contingency of the 8 different trial types above then fitler out the best ones with different tests/criteria 
 for i=1:num_permutations
     my_vect = my_vect(randperm(numel(my_vect)));
     
@@ -56,7 +57,7 @@ type_perm_mtx_select(:,unique(col)) = [];
 
 %% combine trial type and reward vectors
 
-blocks = 3;
+blocks = 3; %to generate 150-trial session
 
 num_diff_exps = 600;
 experiments = zeros(blocks * trials_per_block,4,num_diff_exps);
