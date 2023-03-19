@@ -1,4 +1,4 @@
-function [M, Removed] = RemovePikes_NaN(M, TM, Events, Thresh, IfPlot)
+function [M, Removed] = CleanPupil_2023(M, TM, Events, Thresh, IfPlot)
 Copy = M;
 Mask = ones(size(M)); Mask(isnan(M)) = NaN;
 Plo = NaN(size(M));
@@ -125,7 +125,8 @@ for tr = 1:150
     Removed = Removed + numel(Deleter);
 end
 if IfPlot
-    clf
+    fig = figure;
+    fig.Position = [425 356 815 622];
     tiledlayout(2, 2)
     nexttile
         plot(squeeze(M));
@@ -137,6 +138,7 @@ if IfPlot
         xline([Events(6)], "k", "LineWidth", 2, "Alpha", 1)
         xline([Events(2)], "--k", "LineWidth", 2, "Alpha", 1)
         xline([Events(5)], "--k", "LineWidth", 2, "Alpha", 1)
+        xlim([1, size(Copy,2)])
     nexttile
         plot(squeeze(M.*Mask));
         hold on
@@ -147,6 +149,7 @@ if IfPlot
         xline([Events(6)], "k", "LineWidth", 2, "Alpha", 1)
         xline([Events(2)], "--k", "LineWidth", 2, "Alpha", 1)
         xline([Events(5)], "--k", "LineWidth", 2, "Alpha", 1)
+        xlim([1, size(Copy,2)])
 %     nexttile
 %        Mirko(M, TM, Events, "diam. (a.u.)", 0, 0)
 %         title(["Original data"; "PSTH"])

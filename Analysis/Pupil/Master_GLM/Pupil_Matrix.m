@@ -6,7 +6,7 @@ Functions_directory = "\\zisvfs12\Home\yi.zhuo\Documents\GitHub\TD22\Analysis\Pu
 cd(Functions_directory)
 
 %Load the d-struct
-load("d_devaluation.mat") % You might need to update this line or load d_devaluation.mat by hand
+load("d.mat") % You might need to update this line
 PVsmall = d;
 Regions = ["Pupil"];
 Sessions = numel(PVsmall.info);

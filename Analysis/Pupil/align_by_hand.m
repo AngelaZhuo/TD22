@@ -51,7 +51,7 @@ for vx = IX
     
     % find the intan signal for switching the light on
     freq = 20000; % samplerate
-    led_trace = dchannels(:,5);
+    led_trace = dchannels(:,4);
     led_on_timestamp = find(diff(led_trace)==1)/freq;
     led_off_timestamp = find(diff(led_trace)==-1)/freq;
     

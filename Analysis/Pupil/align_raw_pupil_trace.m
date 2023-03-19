@@ -1,6 +1,6 @@
 clear
 
-load('\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\D-struct\d_devaluation.mat');
+load('\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\D-struct\d.mat');
 
 session_index = find(~cellfun(@isempty, {d.pupil.raw_trace},'UniformOutput',1));
 
@@ -13,4 +13,4 @@ for ses = 1:numel(session_index)
 end
 
 
-save('\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\D-struct\d_devaluation.mat','d');
+save('\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\D-struct\d.mat','d');
