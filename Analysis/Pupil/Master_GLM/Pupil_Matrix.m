@@ -2,7 +2,7 @@
 clear
 PVdirectory = "\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\D-struct";
 addpath(genpath(PVdirectory))
-Functions_directory = "\\zisvfs12\Home\yi.zhuo\Documents\GitHub\TD22\Analysis\Pupil\Master_GLM\"; addpath(genpath(Functions_directory))
+Functions_directory = "C:\GitHub\TD22\Analysis\Pupil\Master_GLM\"; addpath(genpath(Functions_directory))
 cd(Functions_directory)
 
 %Load the d-struct
@@ -11,10 +11,17 @@ PVsmall = d;
 Regions = ["Pupil"];
 Sessions = numel(PVsmall.info);
 
-for s = 1:5
-    Sesser{s} = [505:505+17] + (s-1)*18
+
+Sesser{24} = [417:432];     %Exclude y01&y02-20220819
+
+for s = 25:27
+        Sesser{s} = [433:433+17] + (s-25)*18
 end
-Sesser{6} = [595,596,597,598,599,600,601,602,603,605,606,608,609,610,611]; % The index number in the d-struct of the sessions AFTER injection that you want
+
+Sesser{28} = [487:492,495:504]; %Exclude y07&y08-20220824
+ 
+
+Sesser{34} = [595,596,597,598,599,600,601,602,603,605,606,608,609,610,611]; % The index number in the d-struct of the sessions AFTER injection that you want
 
 EndTime = 16.8; % in seconds
 OC_time = [2.1, 3.3];
@@ -24,7 +31,7 @@ R_time = 8.1;
 XEvents = [OC_time, Jitter_time, RC_time, R_time, EndTime]*10;
 
 % Matrix creation loop:
-for s = 1:numel(Sesser)
+for s = 24:28
     teil = 1;
     Matrices.(Regions{teil}).matrix =[];
     Matrices.(Regions{teil}).trialMatrix =[];
@@ -57,10 +64,15 @@ for s = 1:numel(Sesser)
             Bins3 = int64(Session(tr).fv_on_rewcue/BinSize-1) - 2/BinSize :int64(Session(tr).fv_on_rewcue/BinSize-1); Bins3 = Bins3(end-int64(1.1/BinSize):end);
             % CS2, Reward and 8s afrer Reward; 112 bins of .100s
             Bins4 = Bins3(end)+1 : Bins3(end)+1 + int64(11.2/BinSize); Bins4 = Bins4(1:int64(11.2/BinSize));
-
+            
+            if tr == 150 && Bins4(end) > length(diam)
+               diam((length(diam)+1):Bins4(end)) = NaN
+            end
+                    
             Matrices.(Regions{teil}).matrix(uu, :, tr) = diam([Bins1, Bins2, Bins3, Bins4]);
             Matrices.(Regions{teil}).jitter(uu, tr) = Session(tr).fv_on_rewcue - Session(tr).fv_off_odorcue - 1.2;
         end
+        
         Matrices.(Regions{teil}).mouse(uu, 1) = string(PVsmall.info(u).animal);
         % Create trial matrix;
         TM = NaN(1, 3, Trials);
@@ -71,12 +83,15 @@ for s = 1:numel(Sesser)
         if Trials == 125; TM(1, :, 126:150) = NaN; end
         Matrices.(Regions{teil}).trialMatrix(uu, :, :) = TM;
     end
+    
     Matrices.Pupil.trialMatrix(Matrices.Pupil.trialMatrix==10)=6;
+    
     % Make 5->6 and 6->5 in afternoon session mice (and same for CS2)
+    % Change odor identity to the likelihood of the CS1 and CS2 (5 means odor A; 6 means odor B; 7 means odor C; 8 means odor D) 
     Afternoon = ["y09","y10","y11","y16","y13","y14","y17","y18","y19","y20"];
     idx = ismember(Matrices.Pupil.mouse, Afternoon);
     TM = Matrices.Pupil.trialMatrix(idx, :, :);
-    New = zeros(size(TM));
+    New = NaN(size(TM));
     New(:, 3, :) = TM(:, 3, :);
     New(TM == 5) = 6;
     New(TM == 6) = 5;
@@ -87,7 +102,7 @@ for s = 1:numel(Sesser)
     % Matrices.Pupil.trialMatrix(:,:,1:5) = [];
     % Matrices.Pupil.matrix(:,:,1:5) = [];    %Remove the first 5 trials from matrix and trialmatrix to make the baseline for A and B equal
     % Save Before
-    parsave("\\zisvfs12\Home\yi.zhuo\Documents\GitHub\TD22\Analysis\Pupil\Master_GLM\Sessions/Session_" + num2str(s), Matrices);
+    parsave("C:\GitHub\TD22\Analysis\Pupil\Master_GLM\Sessions\Session_" + num2str(s), Matrices);
 end
 % 
 % %%

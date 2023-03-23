@@ -15,10 +15,14 @@ for tr = 1:150
     win = 0; cou = 0;
     ver = 0; nichte = 0;
     for b = 1:167
-        if cou == Thresh || b == Events(3)-1 
+        if b == Events(3)-1 
             win = 0; cou = 0;
             ver = 0; nichte = 0;
             continue
+        end
+        if cou == Thresh
+            win = 0; cou = 0;
+            ver = 0; nichte = 0;
         end
         if OL(1, b, tr) == 0
             if win ~= 0
@@ -109,6 +113,8 @@ for tr = 1:150
     end
 end
 Copy = M.*Mask;
+
+% Interpolate values
 Pla = NaN(size(M));
 Interpolated = 0;
 for tr = 1:150
@@ -116,17 +122,54 @@ for tr = 1:150
     [Copy(1, :, tr), Pla(1, :, tr), Times] = InterpolateNaN(Copy(1, :, tr), Events, 5, AVG-5*STD, AVG+5*STD);
     Interpolated = Interpolated + Times;
 end
+
+% Eliminate values between NaNs where interpolating would have been an outlier 
 for tr = 1:150
-    Nanner = isnan(Copy(1, :, tr));
-    Zeroer = Nanner(2:end-1);
-    Twoer = Nanner(1:end-2) + Nanner(3:end);
-    Deleter =  find(Zeroer == 0 & Twoer == 2);
-    Copy(1, Deleter+1, tr) = NaN;
-    Removed = Removed + numel(Deleter);
+    win = 0; cou = 0;
+    ver = 0; nichte = 0;
+    for b = 1:168
+        if b == Events(3)-1 
+            win = 0; cou = 0;
+            ver = 0; nichte = 0;
+            continue
+        end
+        if cou == Thresh
+            win = 0; cou = 0;
+            ver = 0; nichte = 0;
+        end
+        if isnan(Copy(1, b, tr))
+            if win == 0
+                ver = b+1;
+                win = -1;
+                continue
+            elseif win == 2
+                win = 1;
+                nichte = b;
+            end
+        elseif ~isnan(Copy(1, b, tr))
+            if win == -1
+                cou = cou + 1;
+                win = 2;
+            end
+        end
+        if win == 1
+            Copy(1, ver:nichte, tr) = NaN;
+            Removed = Removed + 1;
+            win = 0; cou = 0;
+            ver = 0; nichte = 0;
+        end
+    end
 end
+% for tr = 1:150
+%     Nanner = isnan(Copy(1, :, tr));
+%     Zeroer = Nanner(2:end-1);
+%     Twoer = Nanner(1:end-2) + Nanner(3:end);
+%     Deleter =  find(Zeroer == 0 & Twoer == 2);
+%     Copy(1, Deleter+1, tr) = NaN;
+%     Removed = Removed + numel(Deleter);
+% end
 if IfPlot
-    fig = figure;
-    fig.Position = [425 356 815 622];
+    clf
     tiledlayout(2, 2)
     nexttile
         plot(squeeze(M));
@@ -138,9 +181,8 @@ if IfPlot
         xline([Events(6)], "k", "LineWidth", 2, "Alpha", 1)
         xline([Events(2)], "--k", "LineWidth", 2, "Alpha", 1)
         xline([Events(5)], "--k", "LineWidth", 2, "Alpha", 1)
-        xlim([1, size(Copy,2)])
     nexttile
-        plot(squeeze(M.*Mask));
+        plot(squeeze(Copy));
         hold on
         plot(squeeze(Pla), "-r", "LineWidth", 2)
         title(["Corrected data, " + num2str(Removed) + " spikes removed"; " and " + num2str(Interpolated) + " interpolations where NaN (max 5 in row)"])
@@ -149,7 +191,6 @@ if IfPlot
         xline([Events(6)], "k", "LineWidth", 2, "Alpha", 1)
         xline([Events(2)], "--k", "LineWidth", 2, "Alpha", 1)
         xline([Events(5)], "--k", "LineWidth", 2, "Alpha", 1)
-        xlim([1, size(Copy,2)])
 %     nexttile
 %        Mirko(M, TM, Events, "diam. (a.u.)", 0, 0)
 %         title(["Original data"; "PSTH"])
