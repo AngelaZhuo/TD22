@@ -2,8 +2,8 @@
 
 clear
 
-Functions_directory = "C:\GitHub\"; addpath(genpath(Functions_directory))
-session_path = '\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\RAW\20220729_TD22';
+Functions_directory = "\\zisvfs12\Home\yi.zhuo\Documents\GitHub"; addpath(genpath(Functions_directory))
+session_path = '\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\RAW\20220802_TD22';
 output_dir = '\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\Pupil\Combined_DigFiles\';
 
 subject_list = dir(session_path);

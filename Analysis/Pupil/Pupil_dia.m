@@ -8,17 +8,21 @@ clear
 
 load '\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\D-struct\d'
 
-csv_path = '\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\Pupil\DeepLabCut\PMC_8point_coord';
-Videolist_csv = getAllFiles(csv_path,'*filtered.csv',1);
-Videolist_csv(contains(Videolist_csv,'short')) = [];
+csv_path = ["\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\Pupil\DeepLabCut\Devaluation_8point_coord\20220913_TD22_Devaluation"]
+%     "\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\Pupil\DeepLabCut\PMC_8point_coord\20220823_TD22"...
+%     "\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\Pupil\DeepLabCut\PMC_8point_coord\20220824_TD22"];
+Videolist_csv = [];
+for csv = 1:numel(csv_path)
+    Videolist_csv = cat(1,Videolist_csv, getAllFiles(csv_path{csv},'*filtered.csv',1))
+    Videolist_csv(contains(Videolist_csv,'short')) = [];
+end
 %Used the filtered 8point coordinates 
 
-savedir = '\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\Pupil\plots\Diameter';
+savedir = '\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\Pupil\plots\Diameter\13.09_thr0.99';
 %the savedir is the directory where pupil raw trace plot is saved
 
 
-vid_path = ["\\zistfs02.zi.local\NoSeA\Angela\TD22_videos\20220824_TD22" "\\zistfs02.zi.local\NoSeA\Angela\TD22_videos\20220823_TD22" "\\zistfs02.zi.local\NoSeA\Angela\TD22_videos\20220822_TD22"...
-    "\\zistfs02.zi.local\NoSeA\Angela\TD22_videos\20220821_TD22" "\\zistfs02.zi.local\NoSeA\Angela\TD22_videos\20220819_TD22"];
+vid_path = ["\\zistfs02.zi.local\NoSeA\Angela\TD22_videos\20220913_TD22_Devaluation"];
 Videolist = [];
 for vd = 1:numel(vid_path)
     Videolist = cat(1,Videolist, getAllFiles(vid_path{vd},'*.wmv',1));
@@ -26,28 +30,24 @@ end
 Videolist(contains(Videolist, {'y07-20220824' 'y08-20220824' 'y01-20220819' 'y02-20220819'})) = [];  %y07/y08-20220824 intan files are missing, y01/y02-20220819 dchannels have no info
 
 
-dig_path = ["\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\Pupil\Combined_DigFiles\20220824_TD22"...
-    "\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\Pupil\Combined_DigFiles\20220823_TD22"...
-    "\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\Pupil\Combined_DigFiles\20220822_TD22"...
-    "\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\Pupil\Combined_DigFiles\20220821_TD22"...
-    "\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\Pupil\Combined_DigFiles\20220819_TD22"];
+dig_path = ["\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\Pupil\Combined_DigFiles\20220913_TD22_Devaluation"]
+%     "\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\Pupil\Combined_DigFiles\20220823_TD22"...
+%     "\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\Pupil\Combined_DigFiles\20220824_TD22"];
 Diglist = [];
 for dg = 1:numel(dig_path)
     Diglist = cat(1,Diglist, getAllFiles(dig_path{dg},'*digital.mat',1));
 end
-Diglist(contains(Diglist, 'y11_y16_220917')) = [];
+% Diglist(contains(Diglist, 'y11_y16_220917')) = [];
 
 
-protocol_path = ["\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\RAW\20220824_TD22" ...
-    "\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\RAW\20220823_TD22"...
-    "\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\RAW\20220822_TD22"...
-    "\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\RAW\20220821_TD22"...
-    "\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\RAW\20220819_TD22"];
+protocol_path = ["\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\RAW\20220913_TD22_Devaluation"]
+%     "\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\RAW\20220823_TD22"...
+%     "\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\RAW\20220824_TD22"];
 Protocollist = [];
 for dg = 1:numel(protocol_path)
     Protocollist = cat(1,Protocollist, getAllFiles(protocol_path{dg},'*protocol.mat',1));
 end
-Protocollist(contains(Protocollist,{'Y11_220917','Y16_220917'})) = [];
+% Protocollist(contains(Protocollist,{'Y11_220917','Y16_220917'})) = [];
 
 
 %% loop to get pupil diameter traces
@@ -55,10 +55,12 @@ Protocollist(contains(Protocollist,{'Y11_220917','Y16_220917'})) = [];
 ID = 1:numel(Videolist_csv); 
 % ID(28) = [];    %y11-20220917_143611 pupil file was corrupted
 
+
 for vx = ID
     
+
     % Load DLC-output data and calculate diameters.
-    likelihood_threshold = 0.95;
+    likelihood_threshold = 0.99;
 
     %8point
     pupil_dia = pupil_load_and_get_diameter(Videolist_csv(vx), likelihood_threshold, savedir); 
@@ -68,6 +70,7 @@ for vx = ID
     % session_index =  hi
     
     % parse pupil diameter traces to d-struct
+    
     [~,video_name] = fileparts(Videolist{vx});
     current_animal_name = video_name(1:3);
     current_date = video_name(5:12);
@@ -81,12 +84,12 @@ for vx = ID
     hold on
     plot(gca, d.pupil(d_info_index).raw_trace);
     title([current_animal_name,' on the ',current_date]);
-    exportgraphics(gcf,fullfile('\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\Pupil\plots\Diameter\',[current_animal_name,'_',current_date,'.png']))
+    exportgraphics(gcf,fullfile('\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\Pupil\plots\Diameter\13.09_thr0.99',[current_animal_name,'_',current_date,'.png']))
     close all;
     
 end
 
-save('\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\D-struct\d.mat','d');
+   save('\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\D-struct\d.mat','d');
 
 
 %% Synchronize digitals with the protocol information
@@ -122,18 +125,22 @@ for vx = 1:numel(Videolist)
     fv_off = find(diff(fvtrace)== -1)/freq + odor_latency;
     fv_on = find(diff(fvtrace)== 1)/freq + odor_latency;
     
-     
-%     if vx == 96 | vx == 97
-%         % Make the number of fv_on equal to the number of fv_off. Only a problem of y07-20220917 and y08-20220917
+    
+    
+% %     If MaxTrialNum < 150, e.g. sessions y07&y08-20220917, y17&y18-20220731
+%     if vx == 15 | vx == 16
+%         % Make the number of fv_on equal to the number of fv_off. 
 %       fv_on = fv_on(1:numel(fv_off));
-      
+%       
 %     % Make the number of on pair so that we have only complete trials
-%     if mod(numel(fv_on), 2) ~= 0
-%         fv_on(end) = []; fv_off(end) = [];
-%     end
+%         if mod(numel(fv_on), 2) ~= 0
+%             fv_on(end) = []; fv_off(end) = [];
+%         end
 %         session.data.trials(numel(fv_on)/2 + 1 : end) = [];
 %     end
             
+ 
+    
     fv_dur = fv_off-fv_on;
 
     
@@ -147,7 +154,7 @@ for vx = 1:numel(Videolist)
     % Sanity check: detected number of fv onsets equal to trials passed?
     MaxTrialNum = length(session.data.trials); 
     if length(fv_on)/2 ~= MaxTrialNum
-       error(['incorrect number of fv_onsets (~=MaxTrialNum) in ' protocolfile '.mat'])
+       warning(['incorrect number of fv_onsets (~=MaxTrialNum) in ' protocolfile '.mat'])
     end
    
     % Sanity check: same number of fv ons and offs...
@@ -186,14 +193,14 @@ for vx = 1:numel(Videolist)
     drops(drops < fv_on(1))=[];
     %drops(drops>fv_on(end)+5)=[];
     
-    for tr=1:length(session.data.trials)
+    for tr=1:numel(session.data.trials)
 
       events(tr).fv_on_odorcue = fv_on_odorcue(tr);
       events(tr).fv_off_odorcue = fv_off_odorcue(tr);
       events(tr).fv_on_rewcue = fv_on_rewcue(tr);
       events(tr).fv_off_rewcue = fv_off_rewcue(tr);
     
-      if tr ~= length(session.data.trials)
+      if tr ~= numel(session.data.trials)
           % DROPS
           events(tr).reward_time = drops(drops>fv_on_odorcue(tr) & drops<fv_on_odorcue(tr+1));
 
@@ -233,7 +240,7 @@ for vx = 1:numel(Videolist)
     vx
 end
 
- save('\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\D-struct\d.mat','d');
+  save('\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\D-struct\d.mat','d');
         
 
 %% Alignment of Intan timestamps to the video timeseries
@@ -260,7 +267,7 @@ for vx = IX
     
     % find the intan signal for switching the light on
     freq = 20000; % samplerate
-    led_trace = dchannels(:,4);
+    led_trace = dchannels(:,5);
     led_on_timestamp = find(diff(led_trace)==1)/freq;
     led_off_timestamp = find(diff(led_trace)==-1)/freq;
     
@@ -310,7 +317,7 @@ for vx = IX
     hold on
     plot(gca,FrameBegin,bright1(FrameBegin),'*','MarkerSize',12,'MarkerFaceColor','g','MarkerEdgeColor','r');
     title([current_animal_name,' on the ',current_date]);
-    exportgraphics(gcf,fullfile('\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\Pupil\plots\Video_LED_brightness\',[current_animal_name,'_',current_date,'.png']))
+    exportgraphics(gcf,fullfile('\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\Pupil\plots\Video_LED_brightness\31.07-02.08_PMC\',[current_animal_name,'_',current_date,'.png']))
     close all;
 
     d.info(d_info_index).LED_on_trigger_intan = led_on_timestamp;
@@ -319,4 +326,4 @@ for vx = IX
     vx
 end
 
- save('\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\D-struct\d','d');
+%  save('\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\D-struct\d','d');

@@ -2,7 +2,7 @@
 clear
 PVdirectory = "\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\D-struct";
 addpath(genpath(PVdirectory))
-Functions_directory = "C:\GitHub\TD22\Analysis\Pupil\Master_GLM\"; addpath(genpath(Functions_directory))
+Functions_directory = "\\zisvfs12\Home\yi.zhuo\Documents\GitHub\TD22\Analysis\Pupil\Master_GLM\"; addpath(genpath(Functions_directory))
 cd(Functions_directory)
 
 %Load the d-struct
@@ -21,7 +21,7 @@ end
 Sesser{28} = [487:492,495:504]; %Exclude y07&y08-20220824
  
 
-Sesser{34} = [595,596,597,598,599,600,601,602,603,605,606,608,609,610,611]; % The index number in the d-struct of the sessions AFTER injection that you want
+% Sesser{34} = [595,596,597,598,599,600,601,602,603,605,606,608,609,610,611]; % The index number in the d-struct of the sessions AFTER injection that you want
 
 EndTime = 16.8; % in seconds
 OC_time = [2.1, 3.3];
@@ -31,7 +31,7 @@ R_time = 8.1;
 XEvents = [OC_time, Jitter_time, RC_time, R_time, EndTime]*10;
 
 % Matrix creation loop:
-for s = 24:28
+for s = 33
     teil = 1;
     Matrices.(Regions{teil}).matrix =[];
     Matrices.(Regions{teil}).trialMatrix =[];
@@ -102,7 +102,7 @@ for s = 24:28
     % Matrices.Pupil.trialMatrix(:,:,1:5) = [];
     % Matrices.Pupil.matrix(:,:,1:5) = [];    %Remove the first 5 trials from matrix and trialmatrix to make the baseline for A and B equal
     % Save Before
-    parsave("C:\GitHub\TD22\Analysis\Pupil\Master_GLM\Sessions\Session_" + num2str(s), Matrices);
+    parsave("\\zisvfs12\Home\yi.zhuo\Documents\GitHub\TD22\Analysis\Pupil\Master_GLM\Sessions\thr0.99_Session_" + num2str(s), Matrices);
 end
 % 
 % %%
