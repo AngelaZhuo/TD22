@@ -7,47 +7,55 @@
 clear
 
 load '\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\D-struct\d'
+%After loading the d-struct, note which sessiosn should be excluded
 
-csv_path = ["\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\Pupil\DeepLabCut\Devaluation_8point_coord\20220913_TD22_Devaluation"]
-%     "\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\Pupil\DeepLabCut\PMC_8point_coord\20220823_TD22"...
-%     "\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\Pupil\DeepLabCut\PMC_8point_coord\20220824_TD22"];
+csv_path = ["\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\Pupil\DeepLabCut\Devaluation_8point_coord\20220908_TD22_Devaluation"...
+            "\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\Pupil\DeepLabCut\Devaluation_8point_coord\20220909_TD22_Devaluation"...
+            "\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\Pupil\DeepLabCut\Devaluation_8point_coord\20220910_TD22_Devaluation"...
+            "\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\Pupil\DeepLabCut\Devaluation_8point_coord\20220917_TD22_Extinction"];
 Videolist_csv = [];
 for csv = 1:numel(csv_path)
-    Videolist_csv = cat(1,Videolist_csv, getAllFiles(csv_path{csv},'*filtered.csv',1))
+    Videolist_csv = cat(1,Videolist_csv, getAllFiles(csv_path{csv},'*filtered.csv',1));
     Videolist_csv(contains(Videolist_csv,'short')) = [];
 end
-%Used the filtered 8point coordinates 
+% Session_filter(Videolist_csv)
+% Used the filtered 8point coordinates 
 
-savedir = '\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\Pupil\plots\Diameter\13.09_thr0.99';
+savedir = '\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\Pupil\plots\Diameter\08.09-17.09_thr0.99';
 %the savedir is the directory where pupil raw trace plot is saved
 
 
-vid_path = ["\\zistfs02.zi.local\NoSeA\Angela\TD22_videos\20220913_TD22_Devaluation"];
+vid_path = ["\\zistfs02.zi.local\NoSeA\Angela\TD22_videos\20220908_TD22_Devaluation"...
+            "\\zistfs02.zi.local\NoSeA\Angela\TD22_videos\20220909_TD22_Devaluation"...
+            "\\zistfs02.zi.local\NoSeA\Angela\TD22_videos\20220910_TD22_Devaluation"...
+            "\\zistfs02.zi.local\NoSeA\Angela\TD22_videos\20220917_TD22_Extinction"];
 Videolist = [];
 for vd = 1:numel(vid_path)
     Videolist = cat(1,Videolist, getAllFiles(vid_path{vd},'*.wmv',1));
 end
-Videolist(contains(Videolist, {'y07-20220824' 'y08-20220824' 'y01-20220819' 'y02-20220819'})) = [];  %y07/y08-20220824 intan files are missing, y01/y02-20220819 dchannels have no info
+Videolist(contains(Videolist, {'y07-20220824' 'y08-20220824' 'y01-20220819' 'y02-20220819' 'y11-20220917'})) = [];  %y07/y08-20220824 intan files are missing, y01/y02-20220819 dchannels have no info
 
 
-dig_path = ["\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\Pupil\Combined_DigFiles\20220913_TD22_Devaluation"]
-%     "\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\Pupil\Combined_DigFiles\20220823_TD22"...
-%     "\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\Pupil\Combined_DigFiles\20220824_TD22"];
+dig_path = ["\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\Pupil\Combined_DigFiles\20220908_TD22_Devaluation"...
+            "\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\Pupil\Combined_DigFiles\20220909_TD22_Devaluation"...
+            "\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\Pupil\Combined_DigFiles\20220910_TD22_Devaluation"...
+            "\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\Pupil\Combined_DigFiles\20220917_TD22_Extinction"];
 Diglist = [];
 for dg = 1:numel(dig_path)
     Diglist = cat(1,Diglist, getAllFiles(dig_path{dg},'*digital.mat',1));
 end
-% Diglist(contains(Diglist, 'y11_y16_220917')) = [];
+Diglist(contains(Diglist, 'y11_y16_220917')) = [];
 
 
-protocol_path = ["\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\RAW\20220913_TD22_Devaluation"]
-%     "\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\RAW\20220823_TD22"...
-%     "\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\RAW\20220824_TD22"];
+protocol_path = ["\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\RAW\20220908_TD22_Devaluation"...
+                "\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\RAW\20220909_TD22_Devaluation"...
+                "\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\RAW\20220910_TD22_Devaluation"...
+                "\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\RAW\20220917_TD22_Extinction"];
 Protocollist = [];
 for dg = 1:numel(protocol_path)
     Protocollist = cat(1,Protocollist, getAllFiles(protocol_path{dg},'*protocol.mat',1));
 end
-% Protocollist(contains(Protocollist,{'Y11_220917','Y16_220917'})) = [];
+Protocollist(contains(Protocollist,{'Y11_220917','Y16_220917'})) = [];
 
 
 %% loop to get pupil diameter traces
@@ -84,12 +92,12 @@ for vx = ID
     hold on
     plot(gca, d.pupil(d_info_index).raw_trace);
     title([current_animal_name,' on the ',current_date]);
-    exportgraphics(gcf,fullfile('\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\Pupil\plots\Diameter\13.09_thr0.99',[current_animal_name,'_',current_date,'.png']))
+    exportgraphics(gcf,fullfile('\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\Pupil\plots\Diameter\08.09-17.09_thr0.99',[current_animal_name,'_',current_date,'.png']))
     close all;
     
 end
 
-   save('\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\D-struct\d.mat','d');
+    save('\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\D-struct\d.mat','d');
 
 
 %% Synchronize digitals with the protocol information
@@ -182,7 +190,7 @@ for vx = 1:numel(Videolist)
     end
 
     % CAVE: CHOOSE RIGHT CHANNEL FOR REWARD SIGNAL! 
-    droptrace = dchannels(:,2)+ dchannels(:,3);
+    droptrace = dchannels(:,2)+ dchannels(:,3); %+dchannels(:,4)for devaluation
 
     % drop latency - depending on setup - CHECK!
     drop_latency = 0.52;           %second %0.1;
@@ -221,7 +229,7 @@ for vx = 1:numel(Videolist)
             DIFF_odor_drop = temp(1)-fv_on_odorcue(tr); 
             % this if condition makes sure that the artificial dropsignal (occuring when
             % serial communication is closed) is not considered as a drop...
-            if any(temp) & DIFF_odor_drop < 6 
+            if any(temp) && DIFF_odor_drop < 6 
               events(tr).reward_time = temp(1);
             end
 
@@ -237,7 +245,7 @@ for vx = 1:numel(Videolist)
     
     % parse to d
     d.events{d_info_index} = events;
-    vx
+    vx;
 end
 
   save('\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\D-struct\d.mat','d');
@@ -323,7 +331,7 @@ for vx = IX
     d.info(d_info_index).LED_on_trigger_intan = led_on_timestamp;
     d.info(d_info_index).LED_on_trigger_camera = FrameBegin/10; % convert from samples to seconds
     
-    vx
+    vx;
 end
 
 %  save('\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\D-struct\d','d');

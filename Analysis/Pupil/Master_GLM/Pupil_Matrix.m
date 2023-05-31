@@ -11,17 +11,18 @@ PVsmall = d;
 Regions = ["Pupil"];
 Sessions = numel(PVsmall.info);
 
+%Index of the Sesser is the order of the day session, index 1 is the first 50-trial session 25.07.2922
+%Sesser(x) contains all the d.info indices of the day session
 
-Sesser{24} = [417:432];     %Exclude y01&y02-20220819
+% Sesser{24} = [417:432];     %Exclude y01&y02-20220819
 
-for s = 25:27
-        Sesser{s} = [433:433+17] + (s-25)*18
+for s = 29:31
+        Sesser{s} = [505:505+17] + (s-29)*18
 end
 
-Sesser{28} = [487:492,495:504]; %Exclude y07&y08-20220824
+% Sesser{28} = [487:492,495:504]; %Exclude y07&y08-20220824
  
-
-% Sesser{34} = [595,596,597,598,599,600,601,602,603,605,606,608,609,610,611]; % The index number in the d-struct of the sessions AFTER injection that you want
+Sesser{34} = [595,596,597,598,599,600,601,602,603,605,606,608,609,610,611]; 
 
 EndTime = 16.8; % in seconds
 OC_time = [2.1, 3.3];
@@ -31,7 +32,7 @@ R_time = 8.1;
 XEvents = [OC_time, Jitter_time, RC_time, R_time, EndTime]*10;
 
 % Matrix creation loop:
-for s = 33
+for s = [29:31, 34]
     teil = 1;
     Matrices.(Regions{teil}).matrix =[];
     Matrices.(Regions{teil}).trialMatrix =[];
@@ -102,7 +103,7 @@ for s = 33
     % Matrices.Pupil.trialMatrix(:,:,1:5) = [];
     % Matrices.Pupil.matrix(:,:,1:5) = [];    %Remove the first 5 trials from matrix and trialmatrix to make the baseline for A and B equal
     % Save Before
-    parsave("\\zisvfs12\Home\yi.zhuo\Documents\GitHub\TD22\Analysis\Pupil\Master_GLM\Sessions\thr0.99_Session_" + num2str(s), Matrices);
+    parsave("\\zisvfs12\Home\yi.zhuo\Documents\GitHub\TD22\Analysis\Pupil\Master_GLM\Sessions\Session_" + num2str(s), Matrices);
 end
 % 
 % %%

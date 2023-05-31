@@ -25,7 +25,7 @@ for x = 1:size(WT_morning,2)
                     Baseline = mean(M(:,1:Events(1)-1,:),2,"omitnan");
                     M = M./Baseline;
                     M = zscore_xnan(M); %compute the z-score omiting the NaN values
-                    TM = Matrices.Pupil.trialMatrix(WT_morning(x), :, :); %
+                    TM = Matrices.Pupil.trialMatrix(WT_morning(x), :, :);
                     nexttile
                     Mirko(M, TM, Matrices.Pupil.events, "zscore", 0, 0);
                     title("S = 33" + ", m = " + Matrices.Pupil.mouse(WT_morning(x)))
@@ -35,17 +35,17 @@ for x = 1:size(WT_morning,2)
 
 
 
-figure
-M = Matrices.Pupil.matrix(WT_morning, :, :);
-Baseline = mean(M(:,1:Events(1)-1,:),2,"omitnan");
-M = M./Baseline;
-M = zscore_xnan(M); %compute the z-score omiting the NaN values
-TM = Matrices.Pupil.trialMatrix(WT_morning, :, :); %
-nexttile
-Mirko(M, TM, Matrices.Pupil.events, "zscore", 0, 0);
-title("S = 27")
-sgtitle(['S = 27, WT_afternoon'],'Interpreter','none')
-parsave_img("\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\Pupil\plots\PSTH\z-score\Cleaned\thr0.99_session", "s27_WT_afternoon", 0, 1, 0)
+% figure
+% M = Matrices.Pupil.matrix(WT_morning, :, :);
+% Baseline = mean(M(:,1:Events(1)-1,:),2,"omitnan");
+% M = M./Baseline;
+% M = zscore_xnan(M); %compute the z-score omiting the NaN values
+% TM = Matrices.Pupil.trialMatrix(WT_morning, :, :); %
+% nexttile
+% Mirko(M, TM, Matrices.Pupil.events, "zscore", 0, 0);
+% title("S = 27")
+% sgtitle(['S = 27, WT_afternoon'],'Interpreter','none')
+% parsave_img("\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\Pupil\plots\PSTH\z-score\Cleaned\thr0.99_session", "s27_WT_afternoon", 0, 1, 0)
 
 
 
