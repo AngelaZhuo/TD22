@@ -12,5 +12,5 @@ for s = [29:31, 34]
         sgtitle("Mouse " + Matrices.Pupil.mouse(m) + ", session " + s);
         close gcf
     end
-    parsave("\\zisvfs12\Home\yi.zhuo\Documents\GitHub\TD22\Analysis\Pupil\Master_GLM\Sessions\CleanSession_" + num2str(s), Matrices)
+    parsave("\\zisvfs12\Home\yi.zhuo\Documents\GitHub\TD22\Analysis\Pupil\Master_GLM\Sessions\CleanPMC_ses_" + num2str(s), Matrices)
 end

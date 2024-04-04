@@ -11,7 +11,7 @@ PVsmall = d;
 Regions = ["Pupil"];
 Sessions = numel(PVsmall.info);
 
-%Index of the Sesser is the order of the day session, index 1 is the first 50-trial session 25.07.2922
+%Index of the Sesser is the order of the day session, index 1 is the first 50-trial session 25.07.2022
 %Sesser(x) contains all the d.info indices of the day session
 
 % Sesser{24} = [417:432];     %Exclude y01&y02-20220819
@@ -67,11 +67,11 @@ for s = [29:31, 34]
             Bins4 = Bins3(end)+1 : Bins3(end)+1 + int64(11.2/BinSize); Bins4 = Bins4(1:int64(11.2/BinSize));
             
             if tr == 150 && Bins4(end) > length(diam)
-               diam((length(diam)+1):Bins4(end)) = NaN
+               diam((length(diam)+1):Bins4(end)) = NaN;
             end
                     
             Matrices.(Regions{teil}).matrix(uu, :, tr) = diam([Bins1, Bins2, Bins3, Bins4]);
-            Matrices.(Regions{teil}).jitter(uu, tr) = Session(tr).fv_on_rewcue - Session(tr).fv_off_odorcue - 1.2;
+            Matrices.(Regions{teil}).jitter(uu, tr) = (Session(tr).fv_on_rewcue - Session(tr).fv_off_odorcue) - 1.2;
         end
         
         Matrices.(Regions{teil}).mouse(uu, 1) = string(PVsmall.info(u).animal);
