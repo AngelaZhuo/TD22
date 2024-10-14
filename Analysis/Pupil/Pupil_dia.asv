@@ -54,7 +54,7 @@ Diglist(contains(Diglist, 'y11_y16_220917')) = [];
 %                 "\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\RAW\20220909_TD22_Devaluation"...
 %                 "\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\RAW\20220910_TD22_Devaluation"...
 %                 "\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\RAW\20220917_TD22_Extinction"];
-protocol_path = "\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\RAW";
+protocol_path = '\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\RAW';
 Protocollist = [];
 for dg = 1:numel(protocol_path)
     Protocollist = cat(1,Protocollist, getAllFiles(protocol_path{dg},'*protocol.mat',1));
@@ -117,8 +117,6 @@ for vx = 1:numel(Videolist)
     d_info_index = find(ismember({d.info.animal}, current_animal_name) & ismember({d.info.date}, current_date));
     
     % load the digital file
-    if find(contains(Diglist,current_animal_name) & contains(Diglist,current_date))
-    end
     load(Diglist{contains(Diglist,current_animal_name) & contains(Diglist,current_date)});
     
     % load the protocol file
@@ -254,7 +252,7 @@ for vx = 1:numel(Videolist)
     vx;
 end
 
-%   save('\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\D-struct\d.mat','d');
+  save('\\zi\flstorage\dep_psychiatrie_psychotherapie\group_entwbio\data\Angela\DATA\TD22\D-struct\d.mat','d');
         
 
 %% Alignment of Intan timestamps to the video timeseries
