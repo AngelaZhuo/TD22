@@ -1,35 +1,46 @@
+function Extract_dynamic_frames(video_path)
+
+% video_path example: '/zi-flstorage/data/Luise/DA_Experiments/AM_Videos/All_rounds_NoSeA/AM1/Round2/small_arena/fc2_save_2022-04-27-124816-0000.avi'
 % Modified from Eda/David's script "video_with_relevant_frames_thirty.m"
 %AZ 2024.10.14
 
-clear;
-% video_path = '/home/edadilara.turgut/Desktop/fc2_save_2023-05-19-163321-0000.avi';
-% video_path = '/home/edadilara.turgut/Documents/fc2_save_2023-05-19-163321-0000_150.avi';
-% video_path = '/home/edadilara.turgut/Documents/fc2_save_2023-05-19-163334-0000_151.avi';
-% v = VideoReader(video_path);
-% disp('input video-object created');
+% Path to save dynamic videos
+% output_dir = '/zi-flstorage/data/Luise/DA_Experiments/AM_Videos/All_rounds_NoSeA/AM1/Round2/small_arena/dynamic_30min_vids/';
+% output_prefix = 'fc2_save_2022-05-01-100706-0000_dynamic_';
+vid_filesep = strfind(video_path,filesep);
+snippet_pthpre = [video_path(vid_filesep(1):vid_filesep(end)),'5-min_vids',video_path(vid_filesep(end):end-4),'_'];
+output_dir = [video_path(vid_filesep(1):vid_filesep(end)),'dynamic_30min_vids/'];
+if ~isfolder(output_dir)
+    mkdir(output_dir)
+end
+output_prefix = [video_path(vid_filesep(end)+1:end-4),'_dynamic_'];
+snippet_folder = [video_path(vid_filesep(1):vid_filesep(end)),'5-min_vids'];
+all_snippets = dir(snippet_folder);
+if_snippets = contains({all_snippets.name},video_path(vid_filesep(end)+1:end-4));
+num_snippets = sum(if_snippets);
 
-vid_dynamic_snip = '\\zistfs02.zi.local\NoSeA\Luise\Autonomouse_Videos_misc\AutonomouseVideos\D1_rounds\AM4\Round2_3\large_arena\fc2_save_2022-04-27-125823-0000_snip_dynamic.avi';
-% short_video_with_mice = '/home/edadilara.turgut/Documents/fc2_save_2023-05-19-163321-0000_150_select.avi';
-% short_video_with_mice = '/home/edadilara.turgut/Documents/fc2_save_2023-05-19-163334-0000_151_select.avi';
-v_out = VideoWriter(vid_dynamic_snip);
-open(v_out);
+% v_out = VideoWriter(vid_dynamic);
+% open(v_out);
 
-% disp('output video-object created');
-
-% get empty frame
-% empty_frame_big_arena = rgb2gray(mov(1).cdata);
-% load('/home/edadilara.turgut/Documents/MATLAB/empty_frame_big_arena.mat');
-
+part_counter = 1;
 framecounter=0;
 
-for vid = 0:250
+% Function to create a new video writer
+file_ext = video_path(end-3:end);
+create_video_writer = @(part_num) VideoWriter([output_dir, output_prefix, num2str(part_num), file_ext]);
+
+% Initialize the first video output
+v_out = create_video_writer(part_counter);
+open(v_out);
+
+for vid = 0:num_snippets-1
     
     % video_path = ['/home/edadilara.turgut/Videos/original/6/fc2_save_2023-06-24-124752-0000_',num2str(vid),'.avi'];
-    video_path = '\\zistfs02.zi.local\NoSeA\Luise\Autonomouse_Videos_misc\AutonomouseVideos\D1_rounds\AM4\Round2_3\large_arena\fc2_save_2022-04-27-125823-0000_snip.avi';
-    v = VideoReader(video_path);
+    snippet_video_path = [snippet_pthpre,num2str(vid),file_ext];
+    v = VideoReader(snippet_video_path);
 
     
-    % disp(['video: ',num2str(vid)]); %adjust here
+    disp(['current snippet video: _',num2str(vid)]); %adjust here
     v.CurrentTime = 0;
     k = 1; 
     while hasFrame(v) 
@@ -39,7 +50,7 @@ for vid = 0:250
 
     k = 2;
     framemove = [];
-    while k<min([numel(mov),5400])
+    while k<min(numel(mov))
     % while k<min([numel(mov),4500])   %in original:min([numel(mov),54000])  try 54000, problem now: it doesnt even look at all ks so it doesnt search through the complete video
 
         % diff_image = abs(rgb2gray(mov(k).cdata(50:430,60:580,:))-rgb2gray(mov(k-1).cdata(50:430,60:580,:)));
@@ -49,11 +60,20 @@ for vid = 0:250
         k = k+1;
         
         
-        % check if currentFrame has mice
-        if max(B,[],'all') > 5 && framecounter<=54000  %Eda used max(B,[],'all')>10; I keep it more conservative
+        % check if currentFrame has mice and the framecounter is within limits 
+        if max(B,[],'all') > 5   %Eda used max(B,[],'all')>10; I keep it more conservative
+            % If framecounter exceeds 54000 (30min), close current video and open a new one
+            if framecounter >= 54000
+                close(v_out);
+                part_counter = part_counter +1;
+                v_out = create_video_writer(part_counter); %create a new video file
+                open(v_out);
+                framecounter = 0;
+            end
+            
             writeVideo(v_out,mov(k).cdata);
             framecounter=framecounter+1;
-            framemove = [framemove;k];
+%             framemove = [framemove;k];
         end
         
         
@@ -61,6 +81,9 @@ for vid = 0:250
 
 end
 
-
+% close the final video file
 close(v_out);
 
+disp('all dynamic frames were extracted');
+
+end
